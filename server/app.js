@@ -3,7 +3,7 @@ var formidable = require('formidable');
 var fs = require('fs');
 var express = require('express');
 var app = express();
-var cmd = require('node-cmd');
+var exec = require('child_process').exec, child;
 
 app.use('/', express.static('views'));
 app.use('/resources', express.static('resources'));
@@ -11,7 +11,7 @@ app.use('/public', express.static('public'));
 
 
 app.get('/', function (req, res) {
-    res.sendFile(__dirname + '/public/index.html');
+    res.sendFile(__dirname + '/views/index.html');
 });
 
 
@@ -24,6 +24,7 @@ app.get('/video_player/:video', function (req, res){
 
 app.post('/upload', function (req, res) {
 
+    var filename;
     // create an incoming form object
     var form = new formidable.IncomingForm();
 
@@ -37,6 +38,7 @@ app.post('/upload', function (req, res) {
     // every time a file has been uploaded successfully,
     // rename it to it's orignal name
     form.on('file', function (field, file) {
+        filename = file.name;
         fs.rename(file.path, path.join(form.uploadDir, file.name));
     });
 
@@ -48,6 +50,7 @@ app.post('/upload', function (req, res) {
     // once all the files have been uploaded, send a response to the client
     form.on('end', function () {
         res.end('success');
+        transcoding(filename);
     });
 
     // parse the incoming request containing the form data
@@ -64,12 +67,18 @@ app.listen(8000, function () {
     console.log('Server listening on port 8000!');
 });
 
-fs.watch('uploads/', (event, filename) => {
-    command = './dash-video-mpd.sh ' + filename // command to transcode files
-
-    cmd.get(command, (err, data, stderr) => {
-            console.log('the current working dir is : ', data)
-        }
-    );
-})
+function transcoding(filename) {
+    command = './dash-video-mpd.sh ' + 'uploads/' + filename // command to transcode files
+    var testscript = exec(command);
+    
+    testscript.stdout.on('data', function(data){
+        console.log(data); 
+        // sendBackInfo();
+    });
+    
+    testscript.stderr.on('data', function(data){
+        console.log(data);
+        // triggerErrorStuff(); 
+    });
+}
 
