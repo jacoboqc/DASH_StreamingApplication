@@ -11,13 +11,12 @@ $.get("/videos", function (data, status) {
         html += "<div class='col-lg-4 col-md-6 mb-4'>" +
                     "<div class='card h-100'>" +
                         "<a href='/video_player/" + video + "'>" +
-                            "<img class='card-img-top' src='http://placehold.it/700x400' alt=''>" +
+                            "<img class='card-img-top' src='/cover/"+ video + "' alt=''>" +
                         "</a>" +
                         "<div class='card-body'>" +
                             "<h4 class='card-title'>" +
-                                "<a href='/video_player/" + video + "'>Item One</a>" +
+                                "<a href='/video_player/" + video + "'>" + video +"</a>" +
                             "</h4>" +
-                            "<p class='card-text'>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Amet numquam aspernatur!</p>" +
                         "</div>" +
                     "</div>" +
                 "</div>";
@@ -30,21 +29,3 @@ $.get("/videos", function (data, status) {
     $('#content').append(html);
 
 });
-
-/*
-data ="<div class='row'>" +
-        "<div class='col-lg-4 col-md-6 mb-4'>" +
-            "<div class='card h-100'>" +
-                "<a href='/video_player/jellyfish-25-mbps-hd-hevc'>" +
-                    "<img class='card-img-top' src='http://placehold.it/700x400' alt=''>" +
-                "</a>" +
-                "<div class='card-body'>" +
-                    "<h4 class='card-title'>"
-                        "<a href='/video_player/jellyfish-25-mbps-hd-hevc'>Item One</a>" +
-                    "</h4>"+
-                    "<p class='card-text'>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Amet numquam aspernatur!</p>"+
-                "</div>"+
-            "</div>" +
-        "</div>" +
-
-*/

@@ -2,25 +2,21 @@
 <html lang="en">
 
 <head>
-
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>Shop Homepage - Start Bootstrap Template</title>
+    <title>Dash Video on demand client</title>
 
     <!-- Own style files-->
     <link rel="stylesheet" href="/public/style/style.css">
-
-    <!-- Own JS files-->
 
     <!-- Bootstrap core CSS -->
     <link href="/public/style/bootstrap.min.css" rel="stylesheet">
 
     <!-- Custom styles for this template -->
     <link href="/public/style/shop-homepage.css" rel="stylesheet">
-
 </head>
 
 <body>
@@ -29,14 +25,27 @@
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
         <div class="container">
             <a class="navbar-brand" href="#">Dash JS client</a>
+
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive"
                 aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
+
+            <div class="collapse navbar-collapse" id="navbarResponsive">
+                <ul class="navbar-nav ml-auto">
+                    <li class="nav-item active">
+                        <button class="btn btn-lg upload-btn navbar-btn" type="button">Upload File</button>
+                        <input id="upload-input" type="file" name="uploads[]">
+                    </li>
+                </ul>
+            </div>
         </div>
     </nav>
 
     <!-- Page Content -->
+    <div class="progress slider closed" style="margin: 5px 0px 0px 0px;">
+        <div class="progress-bar" role="progressbar"></div>
+    </div>
     <div class="container">
 
         <div class="row">
@@ -50,14 +59,14 @@
                         <li data-target="#carouselExampleIndicators" data-slide-to="2"></li>
                     </ol>
                     <div class="carousel-inner header" role="listbox">
-                        <div class="carousel-item active" >
-                            <img class="d-block img-fluid" src="https://www.hdwallpapers.in/walls/avengers_infinity_war_artwork_4k_8k-wide.jpg" alt="First slide">
+                        <div class="carousel-item active">
+                            <img class="d-block img-fluid" src="https://buhomag-cms.imgix.net/wp-content/uploads/2018/04/09135533/vengadores-infinity-war.jpg?auto=compress,format" alt="First slide">
                         </div>
                         <div class="carousel-item">
-                            <img class="d-block img-fluid" src="http://placehold.it/900x350" alt="Second slide">
+                            <img class="d-block img-fluid" src="https://ep01.epimg.net/cultura/imagenes/2018/01/16/actualidad/1516122222_526016_1516212044_noticia_normal_recorte1.jpg" alt="Second slide">
                         </div>
                         <div class="carousel-item">
-                            <img class="d-block img-fluid" src="http://placehold.it/900x350" alt="Third slide">
+                            <img class="d-block img-fluid" src="https://i.kinja-img.com/gawker-media/image/upload/s--pySuNOK7--/c_scale,f_auto,fl_progressive,q_80,w_800/wqzyifeb5wdrlpchm44r.png" alt="Third slide">
                         </div>
                     </div>
                     <a class="carousel-control-prev" href="#carouselExampleIndicators" role="button" data-slide="prev">
@@ -80,15 +89,7 @@
 
     <!-- Footer -->
     <footer class="py-5 bg-dark">
-        <div class="container">
-            <button class="btn btn-lg upload-btn" type="button">Upload File</button>
-            <!-- this button doesn't do anything-->
-            <input id="upload-input" type="file" name="uploads[]">
-            
-            <div class="progress">
-              <div class="progress-bar" role="progressbar"></div>
-            </div>
-        </div>
+
         <!-- /.container -->
     </footer>
 
@@ -97,7 +98,6 @@
     <script src="/public/js/lib/bootstrap.bundle.min.js"></script>
     <script src="/public/js/upload.js"></script>
     <script src="/public/js/getVideos.js"></script>
-
 </body>
 
 </html>
