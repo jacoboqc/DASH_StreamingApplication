@@ -5,13 +5,30 @@
     <title>Dash.js</title>
 
     <link href="/public/style/video.css" rel="stylesheet">
-
+    <style>
+        .videoContainer {
+        position: relative;
+        width: 70%;
+        height: 70%;
+        margin: 0 auto;
+        }
+        .videoContainer video {
+            width: 100%;
+        }
+    </style>
+    
 </head>
 
 <body>
-    <div>
-        <video id="videoPlayer" data-dashjs-player autoplay src="" controls></video>
+    <div id="videoContainer" class="videoContainer">
+        <video id="videoPlayer" data-dashjs-player controls></video>
+        <div id="videoController" class="video-controller unselectable " ng-cloak>
+            <div id="bitrateListBtn" class="btn-track-switch control-icon-layout " data-toggle="tooltip" data-placement="bottom " title="Track List ">
+                <span class="icon-tracks "></span>
+            </div>
+        </div>
     </div>
+
     
     <script src="https://cdn.dashjs.org/latest/dash.all.min.js"></script>
     <script src="/public/js/videoPlayer.js"></script>
