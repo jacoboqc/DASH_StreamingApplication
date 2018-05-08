@@ -5,6 +5,11 @@ $('.upload-btn').on('click', function () {
 });
 
 $('#upload-input').on('change', function () {
+    var slider = document.querySelector('.slider');
+
+    if (document.querySelector('.closed')){
+        slider.classList.remove('closed');
+    }
 
     var files = $(this).get(0).files;
 

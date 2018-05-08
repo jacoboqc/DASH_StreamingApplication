@@ -76,3 +76,21 @@ h2 {
     width: 450px;
   }
 }
+
+.slider {
+  overflow-y: hidden;
+  max-height: 300px;
+  /* approximate max height */
+  transition-property: all;
+  transition-duration: .5s;
+  transition-timing-function: cubic-bezier(0, 1, 0.5, 1);
+}
+
+.slider.closed {
+  max-height: 0;
+}
+
+.img-fluid {
+  margin-left: auto;
+  margin-right: auto;
+}

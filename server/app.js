@@ -3,7 +3,8 @@ var formidable = require('formidable');
 var fs = require('fs');
 var express = require('express');
 var app = express();
-var exec = require('child_process').exec, child;
+var exec = require('child_process').exec,
+    child;
 
 app.use('/', express.static('views'));
 app.use('/resources', express.static('resources'));
@@ -15,12 +16,16 @@ app.get('/', function (req, res) {
 });
 
 
-app.get('/video_player/:video', function (req, res){
+app.get('/video_player/:video', function (req, res) {
     console.log('Requesting ' + req.params.video);
     video_path = '/resources/' + req.params.video;
     res.redirect(301, '/video_player.html?video=' + video_path + '/' + req.params.video + '.mpd');
 });
 
+app.get('/cover/:image', function (req, res) {
+    console.log('Requesting ' + req.params.image);
+    res.sendFile(__dirname + '/resources/' + req.params.image + '/' + req.params.image +'.jpg');
+});
 
 app.post('/upload', function (req, res) {
 
@@ -57,7 +62,7 @@ app.post('/upload', function (req, res) {
     form.parse(req);
 });
 
-app.get('/videos', function(req, res){
+app.get('/videos', function (req, res) {
     fs.readdir('resources', (err, files) => {
         res.send(files);
     })
@@ -70,15 +75,12 @@ app.listen(8000, function () {
 function transcoding(filename) {
     command = './dash-video-mpd.sh ' + 'uploads/' + filename // command to transcode files
     var testscript = exec(command);
-    
-    testscript.stdout.on('data', function(data){
-        console.log(data); 
-        // sendBackInfo();
-    });
-    
-    testscript.stderr.on('data', function(data){
+
+    testscript.stdout.on('data', function (data) {
         console.log(data);
-        // triggerErrorStuff(); 
+    });
+
+    testscript.stderr.on('data', function (data) {
+        console.log(data);
     });
 }
-
