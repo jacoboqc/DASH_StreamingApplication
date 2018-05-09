@@ -94,6 +94,7 @@ function videoQualityListener(){
         if($(this).val() === 'auto') {
             player.setAutoSwitchQualityFor("video", true);
         } else {
+            player.setAutoSwitchQualityFor("video", false);
             player.setQualityFor("video", $(this).val());
         }
     });
@@ -101,8 +102,7 @@ function videoQualityListener(){
 
 function getVideoQualities() {
     player.attachVideoContainer(document.getElementById("videoContainer"));
-    player.getDebug().setLogToBrowserConsole(false);
-    player.setAutoSwitchQualityFor("video", false);
+    //player.getDebug().setLogToBrowserConsole(false);
 
     player.on(dashjs.MediaPlayer.events.STREAM_INITIALIZED, function () {
         let bitrates = player.getBitrateInfoListFor("video");
