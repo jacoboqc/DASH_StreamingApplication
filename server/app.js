@@ -74,6 +74,7 @@ function transcoding(filename) {
     var testscript = exec(command);
 
     testscript.stdout.on('data', function (data) {
+        console.log(data);
     });
 
     testscript.stderr.on('data', function (data) {
