@@ -5,31 +5,23 @@
     <title>Dash.js</title>
 
     <link href="/public/style/video.css" rel="stylesheet">
-    <style>
-        .videoContainer {
-        position: relative;
-        width: 70%;
-        height: 70%;
-        margin: 0 auto;
-        }
-        .videoContainer video {
-            width: 100%;
-        }
-    </style>
-    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">    
 </head>
 
 <body>
     <div id="videoContainer" class="videoContainer">
-        <video id="videoPlayer" data-dashjs-player controls></video>
-        <div id="videoController" class="video-controller unselectable " ng-cloak>
-            <div id="bitrateListBtn" class="btn-track-switch control-icon-layout " data-toggle="tooltip" data-placement="bottom " title="Track List ">
-                <span class="icon-tracks "></span>
-            </div>
+        <div id="qualityMenu">
+            <select id="qualityList" name="qualityList" style="display: none;">
+                <option>auto</option>
+            </select>
+            <button style="font-size:24px" onclick="toogleSettings()">
+                <i class="fa fa-gear"></i>
+            </button>
         </div>
+        <video id="videoPlayer" data-dashjs-player controls></video>
     </div>
 
-    
+    <script src="https://code.jquery.com/jquery-1.10.2.js"></script>
     <script src="https://cdn.dashjs.org/latest/dash.all.min.js"></script>
     <script src="/public/js/videoPlayer.js"></script>
 </body>

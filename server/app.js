@@ -17,13 +17,11 @@ app.get('/', function (req, res) {
 
 
 app.get('/video_player/:video', function (req, res) {
-    console.log('Requesting ' + req.params.video);
     video_path = '/resources/' + req.params.video;
     res.redirect(301, '/video_player.html?video=' + video_path + '/' + req.params.video + '.mpd');
 });
 
 app.get('/cover/:image', function (req, res) {
-    console.log('Requesting ' + req.params.image);
     res.sendFile(__dirname + '/resources/' + req.params.image + '/' + req.params.image +'.jpg');
 });
 
@@ -39,7 +37,6 @@ app.post('/upload', function (req, res) {
     // store all uploads in the /uploads directory
     form.uploadDir = path.join(__dirname, '/uploads');
 
-    console.log(form.uploadDir)
     // every time a file has been uploaded successfully,
     // rename it to it's orignal name
     form.on('file', function (field, file) {
@@ -77,10 +74,8 @@ function transcoding(filename) {
     var testscript = exec(command);
 
     testscript.stdout.on('data', function (data) {
-        console.log(data);
     });
 
     testscript.stderr.on('data', function (data) {
-        console.log(data);
     });
 }

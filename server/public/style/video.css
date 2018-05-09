@@ -1,6 +1,18 @@
-video {
-    text-align: center;
+
+
+.videoContainer {
+    position: relative;
+    width: 70%;
+    height: 70%;
     margin: 0 auto;
-    display: block;
-    width: 90%;
+}
+
+.videoContainer video {
+    width: 100%;
+}
+
+#qualityMenu {
+    position: absolute;
+    z-index: 300000;
+    right: 0px;
 }
