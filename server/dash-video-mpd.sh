@@ -5,25 +5,7 @@
 # Explanation: 
 # https://rybakov.com/blog/
 
-# Validation tool:
-# http://dashif.org/conformance.html
-
-# MDN reference:
-# https://developer.mozilla.org/en-US/Apps/Fundamentals/Audio_and_video_delivery/Setting_up_adaptive_streaming_media_sources
-
-# Add the following mime-types (uncommented) to .htaccess:
-# AddType video/mp4 m4s
-# AddType application/dash+xml mpd
-
-# Use type="application/dash+xml" 
-# in html when using mp4 as fallback:
-#                <video data-dashjs-player loop="true" >
-#                    <source src="/walking/walking.mpd" type="application/dash+xml">
-#                    <source src="/walking/walking.mp4" type="video/mp4">
-#                </video>
-
-# DASH.js
-# https://github.com/Dash-Industry-Forum/dash.js
+tstart="$(date "+%s")"
 
 MYDIR=$(dirname $(readlink -f ${BASH_SOURCE[0]}))
 SAVEDIR=$(pwd)
@@ -54,10 +36,25 @@ if [ ! -d "resources/${f}" ]; then #if directory does not exist, convert
     mkdir "resources/${f}"
 
     ffmpeg -y -i "${fe}" -vsync passthrough -s 480x270 -c:v libx264 -b:v 350k -x264opts keyint=25:min-keyint=25:no-scenecut -profile:v main -preset slow -movflags +faststart -c:a aac -b:a 128k -ac 2 -f mp4 "tmp/${f}_350.mp4"
+    tend="$(date "+%s")"
+    runtime1="$(($tend - $tstart))"
+    echo " ---->>> Execution time = "$runtime1"ms"
     ffmpeg -y -i "${fe}" -vsync passthrough -s 640x360 -c:v libx264 -b:v 650k -x264opts keyint=25:min-keyint=25:no-scenecut -profile:v main -preset slow -movflags +faststart -c:a aac -b:a 128k -ac 2 -f mp4 "tmp/${f}_650.mp4"
+    tend="$(date "+%s")"
+    runtime2="$(($tend - $tstart - $runtime1))"
+    echo " ---->>> Execution time = "$runtime2"ms"    
     ffmpeg -y -i "${fe}" -vsync passthrough -s 960x540 -c:v libx264 -b:v 1400k -x264opts keyint=25:min-keyint=25:no-scenecut -profile:v main -preset slow -movflags +faststart -c:a aac -b:a 128k -ac 2 -f mp4 "tmp/${f}_1400.mp4"
+    tend="$(date "+%s")"
+    runtime3="$(($tend - $tstart - $runtime1 - $runtime2))"
+    echo " ---->>> Execution time = "$runtime3"ms" 
     ffmpeg -y -i "${fe}" -vsync passthrough -s 1280x720 -c:v libx264 -b:v 2500k -x264opts keyint=25:min-keyint=25:no-scenecut -profile:v main -preset slow -movflags +faststart -c:a aac -b:a 128k -ac 2 -f mp4 "tmp/${f}_2500.mp4"
+    tend="$(date "+%s")"
+    runtime4="$(($tend - $tstart - $runtime1 - $runtime2 - $runtime3))"
+    echo " ---->>> Execution time = "$runtime4"ms" 
     ffmpeg -y -i "${fe}" -vsync passthrough -s 1920x1080 -c:v libx264 -b:v 5500k -x264opts keyint=25:min-keyint=25:no-scenecut -profile:v main -preset slow -movflags +faststart -c:a aac -b:a 128k -ac 2 -f mp4 "tmp/${f}_5500.mp4"
+    tend="$(date "+%s")"
+    runtime5="$(($tend - $tstart - $runtime1 - $runtime2 - $runtime3 - $runtime4))"
+    echo " ---->>> Execution time = "$runtime5"ms" 
 
     if [ -f "${fsrt}.srt" ]; then #if srt file exists, add captions
         echo "---> Adding subtitles to videos"
@@ -87,3 +84,7 @@ if [ $c -eq 1 ]; then # if folder empty (errors occur) remove it
 fi
 
 cd "$SAVEDIR"
+
+tend="$(date "+%s")"
+runtime="$(($tend - $tstart))"
+echo "Execution time = "$runtime"ms"
