@@ -68,6 +68,8 @@ if [ ! -d "resources/${f}" ]; then #if directory does not exist, convert
     # create a jpg for poster. Use imagemagick or just save the frame directly from ffmpeg is you don't have mozcjpeg installed.
     ffmpeg -i "${fe}" -ss 5 -vframes 1 -f image2 "resources/${f}"/"${f}".jpg
 
+else
+    echo "ERROR: Directory resources/${f} already exists. Exiting without doing anything."
 fi
 
 cd "resources/${f}"
