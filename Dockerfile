@@ -20,6 +20,7 @@ RUN wget -qO- https://raw.githubusercontent.com/creationix/nvm/v0.33.11/install.
 	&& nvm alias default 8.11.1 \
 	&& npm install formidable node-cmd express
 RUN git clone $repo
+RUN chmod +x /DASH_StreamingApplication/server/dash_video_mpd.sh
 
 ENV PATH /bin/versions/node/v8.11.1/bin:$PATH
 
