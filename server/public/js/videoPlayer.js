@@ -117,7 +117,6 @@ function getVideoQualities() {
         addItemToList(bitrates, '#qualityList');
         player.setQualityFor("video", quality);
         player.setTrackSwitchModeFor("video", "MediaController.TRACK_SWITCH_MODE_ALWAYS_REPLACE");
-        player.setTextDefaultLanguage("es");
-        player.setTextDefaultEnabled(true);
+        player.setFastSwitchEnabled(true);
     });
 }
