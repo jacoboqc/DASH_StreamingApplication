@@ -93,10 +93,16 @@ function videoQualityListener(){
     $("#qualityList").bind("change", function () {
         if($(this).val() === 'auto') {
             player.setAutoSwitchQualityFor("video", true);
+            player.setBufferAheadToKeep(80);
         } else {
             player.setAutoSwitchQualityFor("video", false);
             player.setQualityFor("video", $(this).val());
+            player.setBufferAheadToKeep(2);
         }
+        player.on(dashjs.MediaPlayer.events.QUALITY_CHANGE_RENDERED, function () {
+            console.warn("QUALITY_CHANGE_RENDERED");
+            player.setBufferAheadToKeep(80);
+        });
     });
 }
 
@@ -110,5 +116,8 @@ function getVideoQualities() {
 
         addItemToList(bitrates, '#qualityList');
         player.setQualityFor("video", quality);
+        player.setTrackSwitchModeFor("video", "MediaController.TRACK_SWITCH_MODE_ALWAYS_REPLACE");
+        player.setTextDefaultLanguage("es");
+        player.setTextDefaultEnabled(true);
     });
 }
