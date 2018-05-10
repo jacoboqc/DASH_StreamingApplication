@@ -112,10 +112,8 @@ function getVideoQualities() {
 
     player.on(dashjs.MediaPlayer.events.STREAM_INITIALIZED, function () {
         let bitrates = player.getBitrateInfoListFor("video");
-        let quality = bitrates[0].qualityIndex; //PRUEBA
 
         addItemToList(bitrates, '#qualityList');
-        player.setQualityFor("video", quality);
         player.setTrackSwitchModeFor("video", "MediaController.TRACK_SWITCH_MODE_ALWAYS_REPLACE");
         player.setFastSwitchEnabled(true);
     });
