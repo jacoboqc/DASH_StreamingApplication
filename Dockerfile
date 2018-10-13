@@ -1,7 +1,7 @@
 FROM ubuntu:14.04
 MAINTAINER jacoboqc
 
-ENV repo https://github.com/Guiamrey/DASH_StreamingApplication.git
+ENV repo https://github.com/jacoboqc/DASH_StreamingApplication.git
 ENV gpac https://download.tsi.telecom-paristech.fr/gpac/release/0.7.0/gpac_0.7.0_amd64.deb
 ENV ffmpeg https://johnvansickle.com/ffmpeg/builds/ffmpeg-git-64bit-static.tar.xz
 
