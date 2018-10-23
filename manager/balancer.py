@@ -7,8 +7,7 @@ import time
 cwatch = boto3.client('cloudwatch')
 ec2 = boto3.resource('ec2')
 
-dashboardName = 'cloud_computing_delft'
-metric = 'CPUUtilization'
+LaunchTemplateName = 'ffmpeg_instance''
 instanceApiEndpoint = '/time_remaining'
 
 videoS3Location = '...'
@@ -16,12 +15,11 @@ videoS3Location = '...'
 for instance in ec2.instances.all():
     response = cwatch.get_metric_statistics(
         Namespace = 'AWS/EC2',
-        MetricName = metric,
-        StartTime = datetime.datetime.now() - datetime.timedelta(minutes=5),
-        EndTime = datetime.datetime.now(),
+        MetricName = 'CPUUtilization',
+        StartTime = (datetime.datetime.now() - datetime.timedelta(minutes=5)).isoformat(),
+        EndTime = datetime.datetime.now().isoformat(),
         Statistics = ['Average'],
-        Unit = 'Megabytes',
-        Period = 5,
+        Period = 1,
         Dimensions = [
             {
                 'Name' : 'InstanceId',
@@ -29,7 +27,7 @@ for instance in ec2.instances.all():
             }
         ]
     )
-    cpuLoad = ...
+    cpuLoad = response['Datapoints'[1].'Timestamp']
     if cpuLoad <= 50:
         assignJob(videoS3Location, instance.public_dns_name)
         continue
@@ -44,7 +42,10 @@ for instance in ec2.instances.all():
         assignJob(videoS3Location)
 
 ec2.create_instance(
-...
+    LaunchTemplate = {
+        'LaunchTemplateName' = LaunchTemplateName,
+        'Version' = 'Default'
+    }
 )
 
 def assignJob(videoS3Location, dnsName):
