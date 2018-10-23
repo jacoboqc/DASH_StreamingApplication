@@ -45,5 +45,5 @@ if __name__ == "__main__":
 
     logger.info("Finiseh sending messages")
     time.sleep(20)
-    manager.sqs.delete_queue(QueueUrl=queue_url)
-    logger.info("Queue deleted")
+    #manager.sqs.delete_queue(QueueUrl=queue_url)
+    #logger.info("Queue deleted")

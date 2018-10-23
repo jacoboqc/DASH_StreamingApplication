@@ -5,6 +5,13 @@ var express = require('express');
 var app = express();
 var exec = require('child_process').exec,
     child;
+var AWS = require('aws-sdk');
+
+// Create an S3 client
+var myBucket = 'dash-cloud-website';
+
+var s3 = new AWS.S3();
+
 
 app.use('/', express.static('views'));
 app.use('/resources', express.static('resources'));
@@ -35,6 +42,7 @@ app.post('/upload', function (req, res) {
     form.multiples = true;
 
     // store all uploads in the /uploads directory
+
     form.uploadDir = path.join(__dirname, '/uploads');
 
     // every time a file has been uploaded successfully,
@@ -46,13 +54,14 @@ app.post('/upload', function (req, res) {
 
     // log any errors that occur
     form.on('error', function (err) {
-        console.log('An error has occured: \n' + err);
+        console.log('[ERROR] An error has occured: \n' + err);
     });
 
     // once all the files have been uploaded, send a response to the client
     form.on('end', function () {
         res.end('success');
-        transcoding(filename);
+        saveFileToS3(filename);
+       // transcoding(filename);
     });
 
     // parse the incoming request containing the form data
@@ -65,18 +74,56 @@ app.get('/videos', function (req, res) {
     })
 });
 
-app.listen(8000, function () {
-    console.log('Server listening on port 8000!');
+app.post('/test', function (req, res) {
+    // TODO
 });
 
-function transcoding(filename) {
-    command = './dash-video-mpd.sh ' + 'uploads/' + filename // command to transcode files
-    var testscript = exec(command);
+app.listen(8000, function () {
+    console.log('[INFO] Server listening on port 8000!');
+});
 
-    testscript.stdout.on('data', function (data) {
-        console.log(data);
-    });
+function saveFileToS3(filename) {
+    var myKey = 'uploads/' + filename;
+    var filePath = 'uploads/' + filename;
 
-    testscript.stderr.on('data', function (data) {
+    fs.readFile(filePath, function(err, data){
+        if (err) {
+            console.log('[ERROR] An error has occured: \n');
+            throw err;
+        } else {
+            const params = {
+                Bucket: myBucket,
+                Key: myKey,
+                Body: data
+            };
+            // upload file to S3
+            s3.upload(params, function(s3Err, data) {
+                if (s3Err) {
+                    console.log('[ERROR] An error has occured in S3: \n');
+                throw s3Err;
+                } else
+                    console.log('[INFO] File uploaded successfully at ${data.Location}');
+            });
+            // remove file from local disk
+            fs.unlink(__dirname + filePath, (err) => {
+                if (err) {
+                    console.log('[ERROR] An error has occured: \n');
+                    throw err;
+                } else
+                    console.log('[INFO] ' + filePath + ' deleted.')
+            });
+        }
     });
 }
+
+// function transcoding(filename) {
+//     command = './dash-video-mpd.sh ' + 'uploads/' + filename // command to transcode files
+//     var testscript = exec(command);
+
+//     testscript.stdout.on('data', function (data) {
+//         console.log(data);
+//     });
+
+//     testscript.stderr.on('data', function (data) {
+//     });
+// }

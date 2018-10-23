@@ -86,12 +86,12 @@ class Listener(Thread):
                     attribs = None
                     message_id = None
 
-                    try:
-                        body_dict = json.loads(m_body)
-                    except:
-                        sqs_logger.warning("Unable to parse message from SQS queue '%s': data '%s'"
-                                           % (self._queue_name, m_body))
-                        continue
+                    # try:
+                    #     body_dict = json.loads(m_body)
+                    # except:
+                    #     sqs_logger.warning("Unable to parse message from SQS queue '%s': data '%s'"
+                    #                        % (self._queue_name, m_body))
+                    #     continue
                     if 'MessageAttributes' in message:
                         message_attribs = message['MessageAttributes']
                     if 'Attributes' in message:
@@ -99,7 +99,7 @@ class Listener(Thread):
                     if 'MessageId' in message:
                         message_id = message['MessageId']
 
-                    self.process_message(body_dict, message_id, message_attribs, attribs)
+                    self.process_message(m_body, message_id, message_attribs, attribs)
                     # Delete received message from queue
                     self._sqs.delete_message(
                         QueueUrl=self._queue_url,
@@ -116,6 +116,7 @@ class Listener(Thread):
 
     def process_message(self, body, message_id, attributes, messages_attributes):
         sqs_logger.info("Processing message ")
+        time.sleep(22)
         """
         Implement this method to do something with the SQS message contents
         :param body: dict
