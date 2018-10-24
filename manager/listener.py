@@ -9,7 +9,6 @@ import logging
 import requests
 import datetime
 
-
 sqs_logger = logging.getLogger(__name__)
 sqs_logger.setLevel(logging.INFO)
 
@@ -33,10 +32,6 @@ class Listener(Thread):
         self._queue_url = queue_url
         self._poll_interval = kwargs["interval"] if 'interval' in kwargs else 20
         self._queue_visibility_timeout = kwargs['visibility_timeout'] if 'visibility_timeout' in kwargs else 600
-        self._error_queue_name = kwargs['error_queue'] if 'error_queue' in kwargs else None
-        self._error_queue_url = kwargs['error_queue_url'] if 'error_queue_url' in kwargs else None
-        self._error_queue_visibility_timeout = kwargs[
-            'error_visibility_timeout'] if 'error_visibility_timeout' in kwargs else '600'
         self._message_attribute_names = kwargs['message_attribute_names'] if 'message_attribute_names' in kwargs else []
         self._attribute_names = kwargs['attribute_names'] if 'attribute_names' in kwargs else []
         self._region_name = kwargs['region_name'] if 'region_name' in kwargs else None
@@ -48,9 +43,6 @@ class Listener(Thread):
         self._cwatch = boto3.client('cloudwatch')
         self._launch_template_name = 'ffmpeg_instance'
         self._instance_api_endpoint = '/time_remaining'
-
-
-
 
     def _initialize_sqs(self):
         # create SQS client
@@ -91,7 +83,6 @@ class Listener(Thread):
                 AttributeNames=self._attribute_names,
                 MessageAttributeNames=self._message_attribute_names,
                 MaxNumberOfMessages=self._max_number_of_messages,
-                VisibilityTimeout=self._queue_visibility_timeout,
                 WaitTimeSeconds=self._wait_time
             )
 
@@ -101,8 +92,6 @@ class Listener(Thread):
                 for message in messages['Messages']:
                     receipt_handle = message['ReceiptHandle']
                     data = message['Body']
-                    message_attribs = None
-                    attribs = None
                     message_id = None
 
                     try:
@@ -111,14 +100,10 @@ class Listener(Thread):
                         sqs_logger.warning("Unable to parse message from SQS queue '%s': data '%s'"
                                            % (self._queue_name, data))
                         continue
-                    if 'MessageAttributes' in message:
-                        message_attribs = message['MessageAttributes']
-                    if 'Attributes' in message:
-                        attribs = message['Attributes']
                     if 'MessageId' in message:
                         message_id = message['MessageId']
 
-                    self.process_message(m_body, message_id, message_attribs, attribs)
+                    self.process_message(m_body, message_id)
                     # Delete received message from queue
                     self._sqs.delete_message(
                         QueueUrl=self._queue_url,
@@ -133,22 +118,22 @@ class Listener(Thread):
 
         self._start_listening()
 
-    def process_message(self, body, message_id, attributes, messages_attributes):
+    def process_message(self, body, message_id):
         sqs_logger.info("Processing message %s" % body)
         video_s3_location = body.fileUrl
 
         for instance in self._ec2.instances.all():
             response = self._cwatch.get_metric_statistics(
-                Namespace = 'AWS/EC2',
-                MetricName = 'CPUUtilization',
-                StartTime = (datetime.datetime.now() - datetime.timedelta(minutes=5)).isoformat(),
-                EndTime = datetime.datetime.now().isoformat(),
-                Statistics = ['Average'],
-                Period = 1,
-                Dimensions = [
+                Namespace='AWS/EC2',
+                MetricName='CPUUtilization',
+                StartTime=(datetime.datetime.now() - datetime.timedelta(minutes=5)).isoformat(),
+                EndTime=datetime.datetime.now().isoformat(),
+                Statistics=['Average'],
+                Period=1,
+                Dimensions=[
                     {
-                        'Name' : 'InstanceId',
-                        'Value' : instance.id
+                        'Name': 'InstanceId',
+                        'Value': instance.id
                     }
                 ]
             )
@@ -193,22 +178,3 @@ class Listener(Thread):
             MinCount=1
         )
         return instance[0].public_dns_name
-
-    # # is this a fifo queue?
-    # if self._queue_name.endswith(".fifo"):
-    #     fifoQueue = "true"
-    #     q = sqs.create_queue(
-    #         QueueName=self._queue_name,
-    #         Attributes={
-    #             'VisibilityTimeout': self._queue_visibility_timeout,  # 10 minutes
-    #             'FifoQueue': fifoQueue
-    #         }
-    #     )
-    # else:
-    #     # need to avoid FifoQueue property for normal non-fifo queues
-    #     q = sqs.create_queue(
-    #         QueueName=self._queue_name,
-    #         Attributes={
-    #             'VisibilityTimeout': self._queue_visibility_timeout,  # 10 minutes
-    #         }
-    #     )
