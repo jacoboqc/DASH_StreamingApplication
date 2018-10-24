@@ -7,12 +7,14 @@ var AWS = require('aws-sdk');
 var myBucket = 'dash-cloud-website';
 var s3 = new AWS.S3();
 
-app.post('/transcode', function (req, res) {
+app.post('/accept_job', function (req, res) {
     
     var data = req.body.data;
-    var key = data;
+    console.log('DATA RECEIVED IN POST ' + data);
+    var key = data.video;
+    console.log('DATA RECEIVED IN POST ---> URL ---> ' + key);
 
-    const params = {
+    var params = {
         Bucket: myBucket, 
         Key: key
     };
@@ -34,8 +36,8 @@ app.post('/transcode', function (req, res) {
     res.send('success');
 });
 
-app.get('/time', function (req, res) {
-    
+app.get('/time_remaining', function (req, res) {
+    // TODO    
 });
 
 app.listen(8080, function () {
@@ -43,7 +45,9 @@ app.listen(8080, function () {
 });
 
 function transcoding(filename) {
-    command = './dash-video-mpd.sh ' + 'uploads/' + filename // command to transcode files
+    var url = 'http://s3-eu-west-1.amazonaws.com/' + myBucket ;
+    url = filename;
+    command = './dash-video-mpd.sh ' + url // command to transcode files
     var testscript = exec(command);
 
     testscript.stdout.on('data', function (data) {

@@ -31,19 +31,25 @@ if __name__ == "__main__":
     queue_name = "test_queue"
     listener = Listener(queue_name, region_name="eu-west-1", max_number_of_messages=5)
     listener.start()
-    queue_url = manager.sqs.get_queue_url(QueueName=queue_name)
-    queue_url = queue_url['QueueUrl']
 
-    for i in range(0, 5):
-        manager.sqs.send_message(
-            QueueUrl=queue_url,
-            MessageBody="Message %s in queue '%s''" % (i, queue_name),
-            DelaySeconds=10,
-        )
-        logger.info("Message sent")
-        time.sleep(10)
 
-    logger.info("Finiseh sending messages")
-    time.sleep(20)
+
+
+
+
+    # queue_url = manager.sqs.get_queue_url(QueueName=queue_name)
+    # queue_url = queue_url['QueueUrl']
+    #
+    # for i in range(0, 5):
+    #     manager.sqs.send_message(
+    #         QueueUrl=queue_url,
+    #         MessageBody="Message %s in queue '%s''" % (i, queue_name),
+    #         DelaySeconds=0,
+    #     )
+    #     logger.info("Message sent")
+    #     time.sleep(10)
+    #
+    # logger.info("Finiseh sending messages")
+    # time.sleep(20)
     #manager.sqs.delete_queue(QueueUrl=queue_url)
     #logger.info("Queue deleted")

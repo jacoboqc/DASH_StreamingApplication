@@ -7,7 +7,7 @@ import time
 cwatch = boto3.client('cloudwatch')
 ec2 = boto3.resource('ec2')
 
-LaunchTemplateName = 'ffmpeg_instance''
+LaunchTemplateName = 'ffmpeg_instance'
 instanceApiEndpoint = '/time_remaining'
 
 videoS3Location = '...'

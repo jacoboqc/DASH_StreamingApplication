@@ -28,7 +28,7 @@ class Listener(Thread):
             raise ValueError('Either `queue` or `queue_url` should be provided.')
         self._queue_name = queue
         self._queue_url = queue_url
-        self._poll_interval = kwargs["interval"] if 'interval' in kwargs else 30
+        self._poll_interval = kwargs["interval"] if 'interval' in kwargs else 20
         self._queue_visibility_timeout = kwargs['visibility_timeout'] if 'visibility_timeout' in kwargs else 600
         self._error_queue_name = kwargs['error_queue'] if 'error_queue' in kwargs else None
         self._error_queue_url = kwargs['error_queue_url'] if 'error_queue_url' in kwargs else None
@@ -81,17 +81,17 @@ class Listener(Thread):
 
                 for message in messages['Messages']:
                     receipt_handle = message['ReceiptHandle']
-                    m_body = message['Body']
+                    data = message['Body']
                     message_attribs = None
                     attribs = None
                     message_id = None
 
-                    # try:
-                    #     body_dict = json.loads(m_body)
-                    # except:
-                    #     sqs_logger.warning("Unable to parse message from SQS queue '%s': data '%s'"
-                    #                        % (self._queue_name, m_body))
-                    #     continue
+                    try:
+                        m_body = json.loads(data)
+                    except:
+                        sqs_logger.warning("Unable to parse message from SQS queue '%s': data '%s'"
+                                           % (self._queue_name, data))
+                        continue
                     if 'MessageAttributes' in message:
                         message_attribs = message['MessageAttributes']
                     if 'Attributes' in message:
@@ -115,7 +115,9 @@ class Listener(Thread):
         self._start_listening()
 
     def process_message(self, body, message_id, attributes, messages_attributes):
-        sqs_logger.info("Processing message ")
+        sqs_logger.info("Processing message %s" % body)
+        url_file = body.fileUrl
+
         time.sleep(22)
         """
         Implement this method to do something with the SQS message contents

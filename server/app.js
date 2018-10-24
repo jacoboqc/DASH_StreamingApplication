@@ -9,9 +9,10 @@ var AWS = require('aws-sdk');
 
 // Create an S3 client
 var myBucket = 'dash-cloud-website';
+var queueName = 'test_queue';
 
 var s3 = new AWS.S3();
-
+var sqs = new AWS.SQS();
 
 app.use('/', express.static('views'));
 app.use('/resources', express.static('resources'));
@@ -61,7 +62,6 @@ app.post('/upload', function (req, res) {
     form.on('end', function () {
         res.end('success');
         saveFileToS3(filename);
-       // transcoding(filename);
     });
 
     // parse the incoming request containing the form data
@@ -85,13 +85,13 @@ app.listen(8000, function () {
 function saveFileToS3(filename) {
     var myKey = 'uploads/' + filename;
     var filePath = 'uploads/' + filename;
+    var dataUrl = null;
 
     fs.readFile(filePath, function(err, data){
         if (err) {
-            console.log('[ERROR] An error has occured: \n');
-            throw err;
+            console.log('[ERROR] An error has occured: \n ' + err);
         } else {
-            const params = {
+            var params = {
                 Bucket: myBucket,
                 Key: myKey,
                 Body: data
@@ -99,31 +99,57 @@ function saveFileToS3(filename) {
             // upload file to S3
             s3.upload(params, function(s3Err, data) {
                 if (s3Err) {
-                    console.log('[ERROR] An error has occured in S3: \n');
-                throw s3Err;
+                    console.log('[ERROR] An error has occured in S3: \n ' + s3Err);
                 } else
-                    console.log('[INFO] File uploaded successfully at ${data.Location}');
+                    dataUrl = data.Location;
+                    console.log('[INFO] File uploaded successfully at ' + dataUrl);
             });
             // remove file from local disk
             fs.unlink(__dirname + filePath, (err) => {
                 if (err) {
-                    console.log('[ERROR] An error has occured: \n');
-                    throw err;
+                    console.log('[ERROR] An error has occured: \n' + err);
                 } else
                     console.log('[INFO] ' + filePath + ' deleted.')
             });
         }
     });
+
+    if (dataUrl != null){
+        sendQueueMessage(dataUrl);
+    }
 }
 
-// function transcoding(filename) {
-//     command = './dash-video-mpd.sh ' + 'uploads/' + filename // command to transcode files
-//     var testscript = exec(command);
+function sendQueueMessage(dataUrl){
+    var params = {
+        QueueName: queueName
+    };
+    var queueUrl = null;
 
-//     testscript.stdout.on('data', function (data) {
-//         console.log(data);
-//     });
+    sqs.getQueueUrl(params, function(err, data) {
+        if (err) {
+          console.log("Error", err);
+        } else {
+          console.log("Success", data.QueueUrl);
+          queueUrl = data.QueueUrl
+        }
+      });
 
-//     testscript.stderr.on('data', function (data) {
-//     });
-// }
+      if (queueUrl != null){
+          body = {
+              'fileUrl':  dataUrl
+          };
+          var params = {
+            MessageBody: JSON.stringify(body),
+            QueueUrl: queueUrl,
+            DelaySeconds: 0 
+          };
+
+          sqs.sendMessage(params, function(err, data) {
+            if (err) {
+                console.log('[ERROR] An error has occured: \n ' + err);
+              } else {
+                console.log('[INFO] Message sent to queue ' + queueName + ' - messageID: ' + data.MessageId);
+              }
+          });
+      }
+}

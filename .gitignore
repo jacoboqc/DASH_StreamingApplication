@@ -3,3 +3,4 @@ manager/.idea/
 manager/node_modules
 manager/__pycache__
 server/resources
+server/tmp
