@@ -25,15 +25,19 @@ app.post('/accept_job', function (req, res) {
             fs.writeFile(key, data.Body, (err) => {
                 if (err) {
                     console.log('[ERROR] An error has occured: \n');
+                    res.status(400);
+                    res.send('ERROR');
                     throw err;
                 } else
                     console.log('[INFO] File ' + key + ' written. Now transcoding.');
+                    res.status(200);
+                    res.send('SUCCESS');
             })
         } 
     });
-
+    
     transcoding(filename);
-    res.send('success');
+    
 });
 
 app.get('/time_remaining', function (req, res) {

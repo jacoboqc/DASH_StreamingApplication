@@ -103,7 +103,7 @@ class Listener(Thread):
                     if 'MessageId' in message:
                         message_id = message['MessageId']
 
-                    self.process_message(m_body, message_id)
+                    self._process_message(m_body, message_id)
                     # Delete received message from queue
                     self._sqs.delete_message(
                         QueueUrl=self._queue_url,
@@ -118,7 +118,7 @@ class Listener(Thread):
 
         self._start_listening()
 
-    def process_message(self, body, message_id):
+    def _process_message(self, body, message_id):
         sqs_logger.info("Processing message %s" % body)
         video_s3_location = body.fileUrl
 
@@ -137,7 +137,7 @@ class Listener(Thread):
                     }
                 ]
             )
-            cpu_load = response['Datapoints'][1]['Timestamp']
+            cpu_load = response['Datapoints'][0]['Timestamp']
             if cpu_load <= 50:
                 self.assign_job(video_s3_location, instance.public_dns_name)
                 continue
@@ -163,6 +163,7 @@ class Listener(Thread):
 
         requests.post('http://' + dns_name + post_job_endpoint,
                       data={'video': video_s3_location})
+
 
     def launch_or_create(self):
         for instance in self._ec2.instances.all():
