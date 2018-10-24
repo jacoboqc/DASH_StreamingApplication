@@ -1,9 +1,9 @@
 #!/usr/bin/python3
 import boto3
 from listener import Listener
+from balancer import Balancer
 import sys
 import logging
-import time
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
@@ -28,9 +28,11 @@ class Manager(object):
 if __name__ == "__main__":
     manager = Manager()
     logger.info("Manager iniliazed ")
-    queue_name = "test_queue"
+    queue_name = "task_queue.fifo"
     listener = Listener(queue_name, region_name="eu-west-1", max_number_of_messages=5)
     listener.start()
+    balancer = Balancer()
+    balancer.start()
 
 
 

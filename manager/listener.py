@@ -6,6 +6,9 @@ from threading import Thread
 import sys
 import time
 import logging
+import requests
+import datetime
+
 
 sqs_logger = logging.getLogger(__name__)
 sqs_logger.setLevel(logging.INFO)
@@ -41,6 +44,13 @@ class Listener(Thread):
         self._max_number_of_messages = kwargs['max_number_of_messages'] if 'max_number_of_messages' in kwargs else 1
 
         self._sqs = self._initialize_sqs()
+        self._ec2 = boto3.resource('ec2')
+        self._cwatch = boto3.client('cloudwatch')
+        self._launch_template_name = 'ffmpeg_instance'
+        self._instance_api_endpoint = '/time_remaining'
+
+
+
 
     def _initialize_sqs(self):
         # create SQS client
@@ -55,13 +65,22 @@ class Listener(Thread):
         if self._queue_url is None:
             # create queue if not found
             sqs_logger.warning("main queue not found, creating now")
-
-            q = sqs.create_queue(
-                QueueName=self._queue_name,
-                Attributes={
-                    'VisibilityTimeout': self._queue_visibility_timeout,
-                }
-            )
+            if self._queue_name.endswith(".fifo"):
+                fifo_queue = "true"
+                q = sqs.create_queue(
+                    QueueName=self._queue_name,
+                    Attributes={
+                        'VisibilityTimeout': self._queue_visibility_timeout,
+                        'FifoQueue': fifo_queue
+                    }
+                )
+            else:
+                q = sqs.create_queue(
+                    QueueName=self._queue_name,
+                    Attributes={
+                        'VisibilityTimeout': self._queue_visibility_timeout,
+                    }
+                )
             self._queue_url = q['QueueUrl']
         return sqs
 
@@ -116,17 +135,64 @@ class Listener(Thread):
 
     def process_message(self, body, message_id, attributes, messages_attributes):
         sqs_logger.info("Processing message %s" % body)
-        url_file = body.fileUrl
+        video_s3_location = body.fileUrl
 
-        time.sleep(22)
-        """
-        Implement this method to do something with the SQS message contents
-        :param body: dict
-        :param attributes: dict
-        :param messages_attributes: dict
-        :return:
-        """
+        for instance in self._ec2.instances.all():
+            response = self._cwatch.get_metric_statistics(
+                Namespace = 'AWS/EC2',
+                MetricName = 'CPUUtilization',
+                StartTime = (datetime.datetime.now() - datetime.timedelta(minutes=5)).isoformat(),
+                EndTime = datetime.datetime.now().isoformat(),
+                Statistics = ['Average'],
+                Period = 1,
+                Dimensions = [
+                    {
+                        'Name' : 'InstanceId',
+                        'Value' : instance.id
+                    }
+                ]
+            )
+            cpu_load = response['Datapoints'][1]['Timestamp']
+            if cpu_load <= 50:
+                self.assign_job(video_s3_location, instance.public_dns_name)
+                continue
+
+            r = requests.get('http://' + instance.public_dns_name + self._instance_api_endpoint)
+            time_remaining = 0
+            if r.status_code == 200:
+                j = json.loads(r.json())
+                time_remaining = j['time']
+
+            if time_remaining < 60:
+                time.sleep(time_remaining)
+                self.assign_job(video_s3_location, instance.public_dns_name)
+                continue
+
+            dns_name_new_instance = self.launch_or_create()
+            self.assign_job(video_s3_location, dns_name_new_instance)
+
         return
+
+    def assign_job(self, video_s3_location, dns_name):
+        post_job_endpoint = '/accept_job'
+
+        requests.post('http://' + dns_name + post_job_endpoint,
+                      data={'video': video_s3_location})
+
+    def launch_or_create(self):
+        for instance in self._ec2.instances.all():
+            if instance.state['Code'] == 80:
+                instance.start(DryRun=False)
+                return instance.public_dns_name
+        instance = self._ec2.create_instances(
+            LaunchTemplate={
+                'LaunchTemplateName': self._launch_template_name,
+                'Version': '$Default'
+                },
+            MaxCount=1,
+            MinCount=1
+        )
+        return instance[0].public_dns_name
 
     # # is this a fifo queue?
     # if self._queue_name.endswith(".fifo"):
