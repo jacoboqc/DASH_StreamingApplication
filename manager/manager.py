@@ -38,7 +38,7 @@ def launch_proxy():
     instance = response[0]
     instance_id = instance.id
     try:
-        while instance.state != 'running':
+        while instance.state.get('Code') != 16:
             time.sleep(5)
             instance.load()
             logger.info('Status Proxy: ' + str(instance.state))
