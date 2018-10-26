@@ -27,7 +27,7 @@ logger.addHandler(sh)
 class Balancer(Thread):
     def run(self):
         while True:
-            size = sum(1 for _ in ec2.instances.all() if _.state == 16 or _.state == 0)
+            size = sum(1 for _ in ec2.instances.all() if _.state == 'running' or _.state == 'pending')
             logger.info('Running %s instances.' % str(size))
             for instance in ec2.instances.all():
                 response = cwatch.get_metric_statistics(
@@ -44,7 +44,7 @@ class Balancer(Thread):
                         }
                     ]
                 )
-                if instance.state == 16:
+                if instance.state == 'running':
                     ip = instance.public_ip_address
                     logger.info('--------------> ' + str(ip))
                     if ip != '52.17.18.108' and ip != '52.16.139.42' and ip != '34.247.193.119':
