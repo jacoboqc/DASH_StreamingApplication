@@ -6,7 +6,7 @@ Vagrant.configure("2") do |config|
 		m1.vm.box = "dummy"
 
 		m1.vm.provider :aws do |aws, override|
-			aws.ami = "ami-0c21ae4a3bd190229"
+			aws.ami = "ami-014367d9648180b64"
 	    aws.region="eu-west-1"
 			aws.instance_type="t2.micro"
 			aws.keypair_name="cloudcomputing"
@@ -25,7 +25,7 @@ Vagrant.configure("2") do |config|
 		m2.vm.box = "dummy"
 
 		m2.vm.provider :aws do |aws, override|
-			aws.ami = "ami-0c21ae4a3bd190229"
+			aws.ami = "ami-014367d9648180b64"
 	    aws.region="eu-west-1"
 			aws.instance_type="t2.micro"
 			aws.keypair_name="cloudcomputing"
