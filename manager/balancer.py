@@ -46,6 +46,7 @@ class Balancer(Thread):
                 )
                 if instance.state == 16:
                     ip = instance.public_ip_address
+                    logger.info('--------------> ' + ip)
                     if ip != '52.17.18.108' and ip != '52.16.139.42' and ip != '34.247.193.119':
                         cpu_load = response['Datapoints'][0]['Average']
                         load_unit = response['Datapoint'][0]['Unit']

@@ -39,8 +39,9 @@ def launch_proxy():
     instance_id = instance.id
     try:
         while instance.state != 16:
-            time.sleep(2)
+            time.sleep(5)
             instance.load()
+            logger.info('---------> status proxy ' + instance.state)
 
         response = ec2_client.associate_address(AllocationId='eipalloc-04c4e9298333c289e',
                                                 InstanceId=instance_id)
