@@ -8,3 +8,4 @@ server/uploads
 server/*.mp4
 server/tmp
 server/node_modules
+.vagrant/*
