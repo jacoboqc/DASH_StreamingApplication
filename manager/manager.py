@@ -36,7 +36,7 @@ def launch_proxy():
         MinCount=1
     )
 
-    instance_id = response[0]['id']
+    instance_id = response[0].id
     try:
         response = ec2_client.associate_address(AllocationId='eipalloc-04c4e9298333c289e',
                                          InstanceId=instance_id)
