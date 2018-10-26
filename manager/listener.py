@@ -148,7 +148,7 @@ class Listener(Thread):
                 j = json.loads(r.json())
                 time_remaining = j['time']
 
-            if time_remaining < 60:
+            if time_remaining < 20:
                 time.sleep(time_remaining)
                 self.assign_job(video_s3_location, instance.public_dns_name)
                 continue
@@ -167,7 +167,7 @@ class Listener(Thread):
 
     def launch_or_create(self):
         for instance in self._ec2.instances.all():
-            if instance.state['Code'] == 80:
+            if instance.state.get('Code') == 80:
                 instance.start(DryRun=False)
                 return instance.public_dns_name
         instance = self._ec2.create_instances(
