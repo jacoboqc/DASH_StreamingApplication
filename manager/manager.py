@@ -38,9 +38,11 @@ def launch_proxy():
 
     instance_id = response[0].id
     try:
-        response = ec2_client.associate_address(AllocationId='eipalloc-04c4e9298333c289e',
-                                         InstanceId=instance_id)
+        while response[0].status != 16:
+            time.sleep(2)
 
+        response = ec2_client.associate_address(AllocationId='eipalloc-04c4e9298333c289e',
+                                                InstanceId=instance_id)
         logger.info('Elastic IP associated with proxy instance. Response: ' + str(response))
     except ClientError as e:
         logger.error('An error occurred while associating Elastic IP to Proxy instance. Error: ' + str(e.response))
