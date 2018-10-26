@@ -96,7 +96,7 @@ app.get('/videos', function (req, res) {
                 var contents = data.Contents;
                 contents.forEach(function (content) {
                     var key = content.Key.split("/")[1];
-                    //key = 'http://s3-eu-west-1.amazonaws.com/dash-cloud-website/resources'
+                    // compare element 2 of the routes, if they are the same do not add it to array.
                     if (files[files.length - 1] != undefined){
                         if (files[files.length - 1] != key)
                             files.push(content.Key);
@@ -112,7 +112,11 @@ app.get('/videos', function (req, res) {
 });
 
 app.post('/test', function (req, res) {
-    // TODO
+    //send to transconde 10 videos
+    for(i = 0; i < 10; i++){
+        video_path = 'http://s3-eu-west-1.amazonaws.com/' + myBucket + '/uploads/' + 'video_test' + i + '.mp4';
+        sendQueueMessage(video_path);
+    }
 });
 
 app.listen(8000, function () {
@@ -123,6 +127,7 @@ function saveFileToS3(filename) {
     var myKey = 'uploads/' + filename;
     var filePath = 'uploads/' + filename;
     var dataUrl = null;
+
 
     fs.readFile(filePath, function(err, data){
         if (err) {

@@ -70,7 +70,7 @@ def ping_proxy():
 
 
 # main code execution
-main_manager = (sys.argv[1] is 'True')
+main_manager = (sys.argv[1] == 'True')
 region_name = 'eu-west-1'
 proxy_up = not main_manager
 ip_manager = sys.argv[2]
