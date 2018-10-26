@@ -27,7 +27,8 @@ logger.addHandler(sh)
 class Balancer(Thread):
     def run(self):
         while True:
-            logger.info('Running %s instances.' % str(len(ec2.instances.all())))
+            size = sum(1 for _ in ec2.instances.all())
+            logger.info('Running %s instances.' % str(size))
             for instance in ec2.instances.all():
                 response = cwatch.get_metric_statistics(
                     Namespace='AWS/EC2',

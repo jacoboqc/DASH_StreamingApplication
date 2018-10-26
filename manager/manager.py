@@ -8,7 +8,8 @@ import os
 import time
 import logging
 import boto3
-ec2 = boto3.client('ec2')
+ec2 = boto3.resource('ec2')
+ec2_client = boto3.client('ec2')
 launch_template_name = 'ffmpeg_instance'
 
 logger = logging.getLogger('manager')
@@ -37,7 +38,7 @@ def launch_proxy():
 
     instance_id = response[0]('id')
     try:
-        response = ec2.associate_address(AllocationId='eipalloc-04c4e9298333c289e',
+        response = ec2_client.associate_address(AllocationId='eipalloc-04c4e9298333c289e',
                                          InstanceId=instance_id)
 
         logger.info('Elastic IP associated with proxy instance. Response: ' + str(response))
