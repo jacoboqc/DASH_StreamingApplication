@@ -4,9 +4,17 @@ var fs = require('fs');
 var request = require('request');
 var express = require('express');
 var app = express();
-var exec = require('child_process').exec,
-    child;
+var log4js = require('log4js');
+
 var AWS = require('aws-sdk');
+log4js.configure({
+    appenders: { 
+        proxy: { type: 'file', filename: 'proxy.log' },
+        console: { type: 'console' }
+    },
+    categories: { default: { appenders: ['proxy'], level: 'INFO' } }
+});
+const logger = log4js.getLogger('proxy');
 
 // Create an S3 client
 var myBucket = 'dash-cloud-website';
@@ -65,7 +73,7 @@ app.post('/upload', function (req, res) {
 
     // log any errors that occur
     form.on('error', function (err) {
-        console.log('[ERROR] An error has occured: \n' + err);
+        logger.error(' An error has occured: \n' + err);
     });
 
     // once all the files have been uploaded, send a response to the client
@@ -91,7 +99,7 @@ app.get('/videos', function (req, res) {
     function listAllKeys(){
         s3.listObjectsV2(params, function(err, data) {
             if (err) {
-                console.log(err, err.stack); // an error occurred
+                logger.error(err, err.stack); // an error occurred
             } else {
                 var contents = data.Contents;
                 contents.forEach(function (content) {
@@ -105,7 +113,7 @@ app.get('/videos', function (req, res) {
                     }
                 });
             }
-            console.log(files);
+            logger.info(files);
             res.send(files);
         });
     }
@@ -120,7 +128,7 @@ app.post('/test', function (req, res) {
 });
 
 app.listen(8000, "0.0.0.0", function () {
-    console.log('[INFO] Server listening on port http://0.0.0.0:8000 !');
+    logger.info(' Server listening on port http://0.0.0.0:8000 !');
 });
 
 function saveFileToS3(filename) {
@@ -131,7 +139,7 @@ function saveFileToS3(filename) {
 
     fs.readFile(filePath, function(err, data){
         if (err) {
-            console.log('[ERROR] An error has occured: \n ' + err);
+            logger.error(' An error has occured: \n ' + err);
         } else {
             var params = {
                 Bucket: myBucket,
@@ -141,17 +149,17 @@ function saveFileToS3(filename) {
             // upload file to S3
             s3.upload(params, function(s3Err, data) {
                 if (s3Err) {
-                    console.log('[ERROR] An error has occured in S3: \n ' + s3Err);
+                    logger.error(' An error has occured in S3: \n ' + s3Err);
                 } else
                     dataUrl = data.Location;
-                    console.log('[INFO] File uploaded successfully at ' + dataUrl);
+                    logger.info(' File uploaded successfully at ' + dataUrl);
             });
             // remove file from local disk
             fs.unlink(__dirname + filePath, (err) => {
                 if (err) {
-                    console.log('[ERROR] An error has occured: \n' + err);
+                    logger.info(' An error has occured: \n' + err);
                 } else
-                    console.log('[INFO] ' + filePath + ' deleted.')
+                    logger.info(' ' + filePath + ' deleted.')
             });
         }
     });
@@ -169,9 +177,9 @@ function sendQueueMessage(dataUrl){
 
     sqs.getQueueUrl(params, function(err, data) {
         if (err) {
-          console.log("Error", err);
+          logger.error("Error", err);
         } else {
-          console.log("Success", data.QueueUrl);
+          logger.info("Success", data.QueueUrl);
           queueUrl = data.QueueUrl
         }
       });
@@ -188,9 +196,9 @@ function sendQueueMessage(dataUrl){
 
           sqs.sendMessage(params, function(err, data) {
             if (err) {
-                console.log('[ERROR] An error has occured: \n ' + err);
+                logger.error(' An error has occured: \n ' + err);
               } else {
-                console.log('[INFO] Message sent to queue ' + queueName + ' - messageID: ' + data.MessageId);
+                logger.info(' Message sent to queue ' + queueName + ' - messageID: ' + data.MessageId);
               }
           });
       }
