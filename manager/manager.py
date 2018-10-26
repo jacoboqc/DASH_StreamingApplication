@@ -80,7 +80,9 @@ def ping_proxy():
             logger.error('Proxy server does not responde to PING.')
             logger.info('Waking up proxy...')
             global proxy_up
+            global proxy_status
             proxy_up = False
+            proxy_status = ''
 
 
 # main code execution
