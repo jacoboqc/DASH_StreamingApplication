@@ -35,11 +35,12 @@ def launch_proxy():
         MaxCount=1,
         MinCount=1
     )
-
-    instance_id = response[0].id
+    instance = response[0]
+    instance_id = instance.id
     try:
-        while response[0].status != 16:
+        while instance.status != 16:
             time.sleep(2)
+            instance.update()
 
         response = ec2_client.associate_address(AllocationId='eipalloc-04c4e9298333c289e',
                                                 InstanceId=instance_id)
