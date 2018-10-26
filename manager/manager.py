@@ -48,6 +48,8 @@ def launch_proxy():
             logger.info('Status Proxy: ' + str(instance.state.get('Name')))
 
         if instance.state.get('Code') == 16:
+            global proxy_up
+            proxy_up = True
             response = ec2_client.associate_address(AllocationId='eipalloc-04c4e9298333c289e',
                                                     InstanceId=instance_id)
         logger.info('Elastic IP associated with proxy instance. Response: ' + str(response))
@@ -71,9 +73,7 @@ def ping_proxy():
     # check if proxy still up
     global proxy_status
     if proxy_status == 16:
-        logger.info('Proxy UP --> PING')
         response = os.system('ping -c 1 ' + ip_proxy)
-        logger.info('PING RESPONSE --> ' + str(response))
         if response == 0:
             logger.info('Proxy server is active.')
         else:
@@ -81,7 +81,6 @@ def ping_proxy():
             logger.info('Waking up proxy...')
             global proxy_up
             proxy_up = False
-    logger.info('LEVANTAR PROXY? ' + str(proxy_up))
 
 
 # main code execution
