@@ -7,6 +7,7 @@ from threading import Thread
 
 cwatch = boto3.client('cloudwatch')
 ec2 = boto3.resource('ec2')
+ec2_client = boto3.client('ec2')
 
 launch_template_name = 'ffmpeg_instance'
 instance_api_endpoint = '/time_remaining'
@@ -47,13 +48,12 @@ class Balancer(Thread):
                 )
                 if instance.state.get('Code') == 16:
                     ip = instance.public_ip_address
-                    logger.info('--------------> ' + str(ip))
                     if ip != '52.17.18.108' and ip != '52.16.139.42' and ip != '34.247.193.119':
                         cpu_load = response['Datapoints'][0]['Average']
                         load_unit = response['Datapoints'][0]['Unit']
 
                         logger.info('CPU metric for instance %s: %s %s' % (instance.id, cpu_load, load_unit))
                         if cpu_load <= 5:
-                            ec2.stop_instances(InstanceIds=[instance.id], DryRun=False)
+                            ec2_client.stop_instances(InstanceIds=[instance.id], DryRun=False)
                             logger.info('Stopping instance %s for low load' % instance.id)
             time.sleep(5)
