@@ -31,7 +31,7 @@ class Listener(Thread):
         self._queue_name = queue
         self._queue_url = queue_url
         self._poll_interval = kwargs["interval"] if 'interval' in kwargs else 20
-        self._queue_visibility_timeout = kwargs['visibility_timeout'] if 'visibility_timeout' in kwargs else 600
+        self._queue_visibility_timeout = kwargs['visibility_timeout'] if 'visibility_timeout' in kwargs else '600'
         self._message_attribute_names = kwargs['message_attribute_names'] if 'message_attribute_names' in kwargs else []
         self._attribute_names = kwargs['attribute_names'] if 'attribute_names' in kwargs else []
         self._region_name = kwargs['region_name'] if 'region_name' in kwargs else None
