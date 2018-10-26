@@ -14,7 +14,7 @@ log4js.configure({
         ffmpeg: { type: 'file', filename: 'server.log' },
         console: { type: 'console' }
     },
-    categories: { default: { appenders: ['ffmpeg'], level: 'INFO' } }
+    categories: { default: { appenders: ['ffmpeg'], level: 'ALL' } }
 });
 const logger = log4js.getLogger('ffmpeg');
 

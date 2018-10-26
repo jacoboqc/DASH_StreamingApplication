@@ -12,7 +12,7 @@ log4js.configure({
         proxy: { type: 'file', filename: 'proxy.log' },
         console: { type: 'console' }
     },
-    categories: { default: { appenders: ['proxy'], level: 'INFO' } }
+    categories: { default: { appenders: ['proxy'], level: 'ALL' } }
 });
 const logger = log4js.getLogger('proxy');
 
