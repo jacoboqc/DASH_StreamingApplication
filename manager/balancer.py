@@ -44,11 +44,14 @@ class Balancer(Thread):
                         }
                     ]
                 )
-                cpu_load = response['Datapoints'][0]['Average']
-                load_unit = response['Datapoint'][0]['Unit']
+                if instance.state == 16:
+                    ip = instance.public_ip_address
+                    if ip != '52.17.18.108' and ip != '52.16.139.42' and ip != '34.247.193.119':
+                        cpu_load = response['Datapoints'][0]['Average']
+                        load_unit = response['Datapoint'][0]['Unit']
 
-                logger.info('CPU metric for instance %s: %s %s' % (instance.id, cpu_load, load_unit))
-                if cpu_load <= 5:
-                    ec2.stop_instances(InstanceIds=[instance.id], DryRun=False)
-                    logger.info('Stopping instance %s for low load' % instance.id)
-                time.sleep(5)
+                        logger.info('CPU metric for instance %s: %s %s' % (instance.id, cpu_load, load_unit))
+                        if cpu_load <= 5:
+                            ec2.stop_instances(InstanceIds=[instance.id], DryRun=False)
+                            logger.info('Stopping instance %s for low load' % instance.id)
+            time.sleep(5)
