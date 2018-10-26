@@ -27,6 +27,7 @@ logger.addHandler(sh)
 class Balancer(Thread):
     def run(self):
         while True:
+            # Code status 16 = running / 0 = pending
             size = sum(1 for ins in ec2.instances.all() if ins.state.get('Code') == 16 or ins.state.get('Code') == 16)
             logger.info('Running %s instances.' % str(size))
             for instance in ec2.instances.all():
@@ -49,7 +50,7 @@ class Balancer(Thread):
                     logger.info('--------------> ' + str(ip))
                     if ip != '52.17.18.108' and ip != '52.16.139.42' and ip != '34.247.193.119':
                         cpu_load = response['Datapoints'][0]['Average']
-                        load_unit = response['Datapoint'][0]['Unit']
+                        load_unit = response['Datapoints'][0]['Unit']
 
                         logger.info('CPU metric for instance %s: %s %s' % (instance.id, cpu_load, load_unit))
                         if cpu_load <= 5:
