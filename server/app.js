@@ -119,8 +119,8 @@ app.post('/test', function (req, res) {
     }
 });
 
-app.listen(8000, function () {
-    console.log('[INFO] Server listening on port 8000!');
+app.listen(8000, "0.0.0.0", function () {
+    console.log('[INFO] Server listening on port http://0.0.0.0:8000 !');
 });
 
 function saveFileToS3(filename) {

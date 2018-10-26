@@ -56,8 +56,8 @@ app.get('/time_remaining', function (req, res) {
     });
 });
 
-app.listen(8080, function () {
-    console.log('Server listening on port 8080!');
+app.listen(8080, "0.0.0.0", function () {
+    console.log('Server listening on port http://0.0.0.0:8080/ !');
 });
 
 function uploadFolderToS3(videoname){
