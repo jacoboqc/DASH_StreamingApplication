@@ -44,9 +44,10 @@ class Balancer(Thread):
                         }
                     ]
                 )
-                cpu_load = response['Datapoints'][1]['Timestamp']
+                cpu_load = response['Datapoints'][0]['Average']
+                load_unit = response['Datapoint'][0]['Unit']
 
-                logger.info('CPU metric for instance %s: %s' % (instance.id, cpu_load))
+                logger.info('CPU metric for instance %s: %s %s' % (instance.id, cpu_load, load_unit))
                 if cpu_load <= 5:
                     ec2.stop_instances(InstanceIds=[instance.id], DryRun=False)
                     logger.info('Stopping instance %s for low load' % instance.id)

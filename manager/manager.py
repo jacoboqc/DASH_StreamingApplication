@@ -36,7 +36,7 @@ def launch_proxy():
         MinCount=1
     )
 
-    instance_id = response[0]('id')
+    instance_id = response[0].('id')
     try:
         response = ec2_client.associate_address(AllocationId='eipalloc-04c4e9298333c289e',
                                          InstanceId=instance_id)
@@ -79,7 +79,7 @@ ip_proxy = '52.17.18.108'
 
 while True:
     if main_manager:
-        logger.info("MAIN manager iniliazed. Creating Listener/Task Scheduler, Balancer and Monitor.")
+        logger.info("MAIN manager iniliazed. Creating Listener/Task Scheduler and Balancer.")
         queue_name = 'task_queue.fifo'
         listener = Listener(queue_name, region_name=region_name, max_number_of_messages=5)
         listener.start()
