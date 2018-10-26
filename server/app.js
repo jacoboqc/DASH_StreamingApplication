@@ -1,6 +1,7 @@
 var path = require('path');
 var formidable = require('formidable');
 var fs = require('fs');
+var request = require('request');
 var express = require('express');
 var app = express();
 var exec = require('child_process').exec,
@@ -17,6 +18,11 @@ var sqs = new AWS.SQS();
 app.use('/', express.static('views'));
 app.use('/resources', express.static('resources'));
 app.use('/public', express.static('public'));
+app.use(function(req, res, next) {
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+    next();
+  });
 
 
 app.get('/', function (req, res) {
@@ -25,12 +31,16 @@ app.get('/', function (req, res) {
 
 
 app.get('/video_player/:video', function (req, res) {
-    video_path = '/resources/' + req.params.video;
+    video_path = 'http://s3-eu-west-1.amazonaws.com/' + myBucket + '/resources/' + req.params.video;
+    res.header('Access-Control-Allow-Origin', '*');
     res.redirect(301, '/video_player.html?video=' + video_path + '/' + req.params.video + '.mpd');
 });
 
 app.get('/cover/:image', function (req, res) {
-    res.sendFile(__dirname + '/resources/' + req.params.image + '/' + req.params.image +'.jpg');
+    
+    image_path = 'http://s3-eu-west-1.amazonaws.com/' + myBucket + '/resources/' + req.params.image;
+    request(image_path).pipe(res);
+    //res.sendFile(image_path + '/' + req.params.image +'.jpg');
 });
 
 app.post('/upload', function (req, res) {
@@ -69,9 +79,36 @@ app.post('/upload', function (req, res) {
 });
 
 app.get('/videos', function (req, res) {
-    fs.readdir('resources', (err, files) => {
-        res.send(files);
-    })
+    var params = {
+        Bucket: myBucket, 
+        Prefix: 'resources/',
+        StartAfter: 'resources/',
+        Delimiter: 'm4s'
+    };
+    var files = [];
+    listAllKeys();
+    var i = 0;
+    function listAllKeys(){
+        s3.listObjectsV2(params, function(err, data) {
+            if (err) {
+                console.log(err, err.stack); // an error occurred
+            } else {
+                var contents = data.Contents;
+                contents.forEach(function (content) {
+                    var key = content.Key.split("/")[1];
+                    //key = 'http://s3-eu-west-1.amazonaws.com/dash-cloud-website/resources'
+                    if (files[files.length - 1] != undefined){
+                        if (files[files.length - 1] != key)
+                            files.push(content.Key);
+                    }else{
+                        files.push(key);
+                    }
+                });
+            }
+            console.log(files);
+            res.send(files);
+        });
+    }
 });
 
 app.post('/test', function (req, res) {

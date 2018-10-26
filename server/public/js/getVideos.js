@@ -7,7 +7,7 @@ $.get("/videos", function (data, status) {
         if (index / 4 === 0) {
             html += "<div class='row'>"
         }
-
+console.log(video);
         html += "<div class='col-lg-4 col-md-6 mb-4'>" +
                     "<div class='card h-100'>" +
                         "<a href='/video_player/" + video + "'>" +

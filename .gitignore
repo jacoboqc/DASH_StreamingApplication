@@ -3,4 +3,8 @@ manager/.idea/
 manager/node_modules
 manager/__pycache__
 server/resources
+server/uploads
+*.mp4
+server/*.mp4
 server/tmp
+server/node_modules
