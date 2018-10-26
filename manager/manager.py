@@ -38,7 +38,7 @@ def launch_proxy():
     instance = response[0]
     instance_id = instance.id
     try:
-        while instance.status != 16:
+        while instance.state != 16:
             time.sleep(2)
             instance.update()
 
