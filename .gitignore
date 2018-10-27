@@ -2,12 +2,13 @@
 manager/.idea/
 manager/node_modules
 manager/__pycache__
+manager/*.log
 server/resources
 server/uploads
 *.mp4
 server/*.mp4
 server/tmp
-server/proxy.log
+server/*.log
 server/node_modules
 server/.fuse**
 vagrant/*
