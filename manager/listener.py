@@ -77,6 +77,7 @@ class Listener(Thread):
 
     def _start_listening(self):
         while True:
+            sqs_logger.info('Waiting for message in queue...')
             messages = self._sqs.receive_message(
                 QueueUrl=self._queue_url,
                 AttributeNames=self._attribute_names,
