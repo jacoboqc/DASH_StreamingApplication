@@ -121,39 +121,41 @@ class Listener(Thread):
         video_s3_location = body['fileUrl']
 
         for instance in self._ec2.instances.all():
-            response = self._cwatch.get_metric_statistics(
-                Namespace='AWS/EC2',
-                MetricName='CPUUtilization',
-                StartTime=(datetime.datetime.now() - datetime.timedelta(minutes=5)).isoformat(),
-                EndTime=datetime.datetime.now().isoformat(),
-                Statistics=['Average'],
-                Period=1,
-                Dimensions=[
-                    {
-                        'Name': 'InstanceId',
-                        'Value': instance.id
-                    }
-                ]
-            )
-            cpu_load = response['Datapoints'][0]['Timestamp']
-            if cpu_load <= 50:
-                self.assign_job(video_s3_location, instance.public_dns_name)
-                continue
+            if instance.state.get('Code') == 16:
+                ip = instance.public_ip_address
+                if ip != '52.17.18.108' and ip != '52.16.139.42' and ip != '34.247.193.119':
+                    response = self._cwatch.get_metric_statistics(
+                        Namespace='AWS/EC2',
+                        MetricName='CPUUtilization',
+                        StartTime=(datetime.datetime.now() - datetime.timedelta(minutes=5)).isoformat(),
+                        EndTime=datetime.datetime.now().isoformat(),
+                        Statistics=['Average'],
+                        Period=1,
+                        Dimensions=[
+                            {
+                                'Name': 'InstanceId',
+                                'Value': instance.id
+                            }
+                        ]
+                    )
+                    cpu_load = response['Datapoints'][0]['Timestamp']
+                    if cpu_load <= 50:
+                        self.assign_job(video_s3_location, instance.public_dns_name)
+                        return
 
-            r = requests.get('http://' + instance.public_dns_name + self._instance_api_endpoint)
-            time_remaining = 0
-            if r.status_code == 200:
-                j = json.loads(r.json())
-                time_remaining = j['time']
+                    r = requests.get('http://' + instance.public_dns_name + self._instance_api_endpoint)
+                    time_remaining = 0
+                    if r.status_code == 200:
+                        j = json.loads(r.json())
+                        time_remaining = j['time']
 
-            if time_remaining < 20:
-                time.sleep(time_remaining)
-                self.assign_job(video_s3_location, instance.public_dns_name)
-                continue
+                    if time_remaining < 20:
+                        time.sleep(time_remaining)
+                        self.assign_job(video_s3_location, instance.public_dns_name)
+                        return
 
-            dns_name_new_instance = self.launch_or_create()
-            self.assign_job(video_s3_location, dns_name_new_instance)
-
+        dns_name_new_instance = self.launch_or_create()
+        self.assign_job(video_s3_location, dns_name_new_instance)
         return
 
     def assign_job(self, video_s3_location, dns_name):
@@ -167,7 +169,11 @@ class Listener(Thread):
         for instance in self._ec2.instances.all():
             if instance.state.get('Code') == 80:
                 instance.start(DryRun=False)
+                while instance.state.get('Code') != 16:
+                    instance.load()
+                    time.sleep(5)
                 return instance.public_dns_name
+
         instance = self._ec2.create_instances(
             LaunchTemplate={
                 'LaunchTemplateName': self._launch_template_name,
@@ -176,4 +182,7 @@ class Listener(Thread):
             MaxCount=1,
             MinCount=1
         )
+        while instance[0].state.get('Code') != 16:
+            instance[0].load()
+            time.sleep(5)
         return instance[0].public_dns_name
