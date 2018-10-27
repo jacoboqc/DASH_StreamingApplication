@@ -11,6 +11,7 @@ import boto3
 
 ec2 = boto3.resource('ec2')
 ec2_client = boto3.client('ec2')
+proxy_template_name = 'proxy_instance'
 launch_template_name = 'ffmpeg_instance'
 
 logger = logging.getLogger('manager')
@@ -30,7 +31,7 @@ def launch_proxy():
     # launch proxy
     response = ec2.create_instances(
         LaunchTemplate={
-            'LaunchTemplateName': launch_template_name,
+            'LaunchTemplateName': proxy_template_name,
             'Version': '$Default',
         },
         MaxCount=1,

@@ -18,8 +18,7 @@ RUN wget -qO- https://raw.githubusercontent.com/creationix/nvm/v0.33.11/install.
 	&& . $HOME/.nvm/nvm.sh \
 	&& nvm install 8.11.1 \
 	&& nvm alias default 8.11.1 \
-	&& npm install formidable node-cmd express \
-	&& npm install
+	&& npm install aws-sdk body-parser child-process express formidable https log4js request node-cmd express
 RUN git clone $repo
 RUN chmod +x /DASH_StreamingApplication/server/dash-video-mpd.sh
 
