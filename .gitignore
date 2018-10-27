@@ -9,4 +9,5 @@ server/*.mp4
 server/tmp
 server/proxy.log
 server/node_modules
-.vagrant/*
+server/.fuse**
+vagrant/*
