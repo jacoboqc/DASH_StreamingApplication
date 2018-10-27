@@ -4,7 +4,7 @@ import sys
 import time
 sqs = boto3.client('sqs')
 region_name = 'eu-west-1'
-queue_name = 'task_queue.fifo'
+queue_name = 'task_queue'
 listener = Listener(queue_name, region_name=region_name, max_number_of_messages=5)
 listener.start()
 
