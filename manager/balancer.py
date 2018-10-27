@@ -15,7 +15,7 @@ instance_api_endpoint = '/time_remaining'
 logger = logging.getLogger('monitor')
 logger.setLevel(logging.INFO)
 
-sh = logging.StreamHandler(sys.stdout)
+sh = logging.FileHandler('balancer.log')
 sh.setLevel(logging.INFO)
 
 formatstr = '[%(asctime)s - %(name)s - %(levelname)s]  %(message)s'

@@ -7,6 +7,7 @@ var bodyParser = require('body-parser')
 var log4js = require('log4js');
 
 var myBucket = 'dash-cloud-website';
+AWS.config.update({region: 'us-east-1'});
 var s3 = new AWS.S3();
 
 log4js.configure({

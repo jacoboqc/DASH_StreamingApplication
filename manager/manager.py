@@ -17,7 +17,7 @@ launch_template_name = 'ffmpeg_instance'
 logger = logging.getLogger('manager')
 logger.setLevel(logging.INFO)
 
-sh = logging.StreamHandler(sys.stdout)
+sh = logging.FileHandler('manager.log')
 sh.setLevel(logging.INFO)
 
 formatstr = '[%(asctime)s - %(name)s - %(levelname)s]  %(message)s'

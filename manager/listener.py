@@ -12,7 +12,7 @@ import datetime
 sqs_logger = logging.getLogger(__name__)
 sqs_logger.setLevel(logging.INFO)
 
-sh = logging.StreamHandler(sys.stdout)
+sh = logging.FileHandler('listener.log')
 sh.setLevel(logging.INFO)
 
 formatstr = '[%(asctime)s - %(name)s - %(levelname)s]  %(message)s'
