@@ -54,7 +54,7 @@ def launch_proxy():
 
             while instance.public_ip_address != '52.17.18.108':
                 time.sleep(5)
-                instance = ec2_client.associate_address(AllocationId='eipalloc-04c4e9298333c289e',
+                response = ec2_client.associate_address(AllocationId='eipalloc-04c4e9298333c289e',
                                                         InstanceId=instance_id)
                 instance.load()
 
