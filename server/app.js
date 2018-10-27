@@ -170,7 +170,7 @@ function saveFileToS3(filename) {
 }
 
 function sendQueueMessage(dataUrl){
-    logger.info('[INFO]: Sending message...');
+    logger.info('[INFO]: Building message 1...');
     var params = {
         QueueName: queueName
     };
@@ -181,7 +181,7 @@ function sendQueueMessage(dataUrl){
           logger.error("[ERROR]: Error trying to get the URL of the queue: ", err);
         } else {
           logger.info("[INFO]: Success getting the URL of the queue: ", data.QueueUrl);
-          queueUrl = data.QueueUrl
+          queueUrl = data.QueueUrl;
         }
       });
 
@@ -195,6 +195,7 @@ function sendQueueMessage(dataUrl){
             DelaySeconds: 0 
           };
 
+          logger.info('[INFO]: Building message 2...');
           sqs.sendMessage(params, function(err, data) {
             if (err) {
                 logger.error('[ERROR]: An error has occured while trying to send message to queue: \n ' + err);
