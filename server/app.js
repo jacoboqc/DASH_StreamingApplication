@@ -153,9 +153,10 @@ function saveFileToS3(filename) {
                 } else
                     dataUrl = data.Location;
                     logger.info(' File uploaded successfully at ' + dataUrl);
+                    sendQueueMessage(dataUrl);
             });
             // remove file from local disk
-            fs.unlink(__dirname + filePath, (err) => {
+            fs.unlink(__dirname + '/' + filePath, (err) => {
                 if (err) {
                     logger.info(' An error has occured: \n' + err);
                 } else
@@ -164,12 +165,11 @@ function saveFileToS3(filename) {
         }
     });
 
-    if (dataUrl != null){
-        sendQueueMessage(dataUrl);
-    }
+    
 }
 
 function sendQueueMessage(dataUrl){
+    logger.info('Sending message...');
     var params = {
         QueueName: queueName
     };
