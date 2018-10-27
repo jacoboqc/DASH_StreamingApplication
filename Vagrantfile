@@ -18,7 +18,7 @@ Vagrant.configure("2") do |config|
 	  end
 
 		m1.vm.provision "shell",
-			inline: "touch test.txt"
+			inline: "python3 /home/ec2-user/DASH_StreamingApplication/manager/manager.py True $M2" + M2_IP
 	end
 
 	config.vm.define "m2" do |m2|
@@ -37,6 +37,6 @@ Vagrant.configure("2") do |config|
 	  end
 
 		m2.vm.provision "shell",
-			inline: "touch test.txt"
+			inline: "python3 /home/ec2-user/DASH_StreamingApplication/manager/manager.py False " + M1_IP
 	end
 end
