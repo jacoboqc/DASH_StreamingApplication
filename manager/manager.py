@@ -101,7 +101,7 @@ ip_proxy = '52.17.18.108'
 while True:
     if main_manager:
         logger.info("MAIN manager iniliazed. Creating Listener/Task Scheduler and Balancer.")
-        queue_name = 'task_queue.fifo'
+        queue_name = 'task_queue'
         listener = Listener(queue_name, region_name=region_name, max_number_of_messages=5)
         listener.start()
         balancer = Balancer()

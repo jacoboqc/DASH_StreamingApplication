@@ -18,7 +18,7 @@ const logger = log4js.getLogger('proxy');
 
 // Create an S3 client
 var myBucket = 'dash-cloud-website';
-var queueName = 'task_queue.fifo';
+var queueName = 'task_queue';
 
 AWS.config.update({region: 'eu-west-1'});
 var s3 = new AWS.S3();
