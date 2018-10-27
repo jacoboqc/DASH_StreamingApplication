@@ -74,7 +74,7 @@ app.post('/upload', function (req, res) {
 
     // log any errors that occur
     form.on('error', function (err) {
-        logger.error(' An error has occured: \n' + err);
+        logger.error('[ERROR]: An error has occured: \n' + err);
     });
 
     // once all the files have been uploaded, send a response to the client
@@ -129,7 +129,7 @@ app.post('/test', function (req, res) {
 });
 
 app.listen(8000, "0.0.0.0", function () {
-    logger.info(' Server listening on port http://0.0.0.0:8000 !');
+    logger.info('[INFO]: Server listening on port http://0.0.0.0:8000 !');
 });
 
 function saveFileToS3(filename) {
@@ -140,7 +140,7 @@ function saveFileToS3(filename) {
 
     fs.readFile(filePath, function(err, data){
         if (err) {
-            logger.error(' An error has occured: \n ' + err);
+            logger.error('[ERROR]: An error has occured: \n ' + err);
         } else {
             var params = {
                 Bucket: myBucket,
@@ -150,18 +150,18 @@ function saveFileToS3(filename) {
             // upload file to S3
             s3.upload(params, function(s3Err, data) {
                 if (s3Err) {
-                    logger.error(' An error has occured in S3: \n ' + s3Err);
+                    logger.error('[ERROR]: An error has occured in S3: \n ' + s3Err);
                 } else
                     dataUrl = data.Location;
-                    logger.info(' File uploaded successfully at ' + dataUrl);
+                    logger.info('[INFO]: File uploaded successfully at ' + dataUrl);
                     sendQueueMessage(dataUrl);
             });
             // remove file from local disk
             fs.unlink(__dirname + '/' + filePath, (err) => {
                 if (err) {
-                    logger.info(' An error has occured: \n' + err);
+                    logger.info('[ERROR]: An error has occured: \n' + err);
                 } else
-                    logger.info(' ' + filePath + ' deleted.')
+                    logger.info('[INFO]:  ' + filePath + ' deleted.')
             });
         }
     });
@@ -170,7 +170,7 @@ function saveFileToS3(filename) {
 }
 
 function sendQueueMessage(dataUrl){
-    logger.info('Sending message...');
+    logger.info('[INFO]: Sending message...');
     var params = {
         QueueName: queueName
     };
@@ -178,9 +178,9 @@ function sendQueueMessage(dataUrl){
 
     sqs.getQueueUrl(params, function(err, data) {
         if (err) {
-          logger.error("Error", err);
+          logger.error("[ERROR]: Error trying to get the URL of the queue: ", err);
         } else {
-          logger.info("Success", data.QueueUrl);
+          logger.info("[INFO]: Success getting the URL of the queue: ", data.QueueUrl);
           queueUrl = data.QueueUrl
         }
       });
@@ -197,9 +197,9 @@ function sendQueueMessage(dataUrl){
 
           sqs.sendMessage(params, function(err, data) {
             if (err) {
-                logger.error(' An error has occured: \n ' + err);
+                logger.error('[ERROR]: An error has occured while trying to send message to queue: \n ' + err);
               } else {
-                logger.info(' Message sent to queue ' + queueName + ' - messageID: ' + data.MessageId);
+                logger.info('[INFO]: Message sent to queue ' + queueName + ' - messageID: ' + data.MessageId);
               }
           });
       }
