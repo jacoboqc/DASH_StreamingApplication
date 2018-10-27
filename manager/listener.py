@@ -118,7 +118,7 @@ class Listener(Thread):
 
     def _process_message(self, body):
         sqs_logger.info("Processing message %s" % body)
-        video_s3_location = body.fileUrl
+        video_s3_location = body['fileUrl']
 
         for instance in self._ec2.instances.all():
             response = self._cwatch.get_metric_statistics(
