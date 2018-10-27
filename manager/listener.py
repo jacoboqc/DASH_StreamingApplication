@@ -3,7 +3,6 @@ import boto3
 import json
 import threading
 from threading import Thread
-import sys
 import time
 import logging
 import requests
@@ -118,7 +117,7 @@ class Listener(Thread):
 
         self._start_listening()
 
-    def _process_message(self, body, message_id):
+    def _process_message(self, body):
         sqs_logger.info("Processing message %s" % body)
         video_s3_location = body.fileUrl
 
