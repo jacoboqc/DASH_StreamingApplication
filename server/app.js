@@ -180,28 +180,25 @@ function sendQueueMessage(dataUrl){
         if (err) {
           logger.error("[ERROR]: Error trying to get the URL of the queue: ", err);
         } else {
-          logger.info("[INFO]: Success getting the URL of the queue: ", data.QueueUrl);
-          queueUrl = data.QueueUrl;
-        }
-      });
+            logger.info("[INFO]: Success getting the URL of the queue: ", data.QueueUrl);
+            queueUrl = data.QueueUrl;
+            body = {
+                'fileUrl':  dataUrl
+            };
+            var params = {
+                MessageBody: JSON.stringify(body),
+                QueueUrl: queueUrl,
+                DelaySeconds: 0 
+            };
 
-      if (queueUrl != null){
-          body = {
-              'fileUrl':  dataUrl
-          };
-          var params = {
-            MessageBody: JSON.stringify(body),
-            QueueUrl: queueUrl,
-            DelaySeconds: 0 
-          };
-
-          logger.info('[INFO]: Building message 2...');
-          sqs.sendMessage(params, function(err, data) {
+            logger.info('[INFO]: Building message 2...');
+            sqs.sendMessage(params, function(err, data) {
             if (err) {
                 logger.error('[ERROR]: An error has occured while trying to send message to queue: \n ' + err);
-              } else {
+                } else {
                 logger.info('[INFO]: Message sent to queue ' + queueName + ' - messageID: ' + data.MessageId);
-              }
-          });
-      }
+                }
+            });
+        }
+    });
 }
