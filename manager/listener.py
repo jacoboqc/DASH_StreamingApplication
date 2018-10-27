@@ -90,20 +90,18 @@ class Listener(Thread):
                 sqs_logger.info(str(len(messages['Messages'])) + " messages received")
 
                 for message in messages['Messages']:
+                    sqs_logger.info('Getting message...')
                     receipt_handle = message['ReceiptHandle']
                     data = message['Body']
                     message_id = None
-
+                    m_body = None
                     try:
                         m_body = json.loads(data)
                     except:
                         sqs_logger.warning("Unable to parse message from SQS queue '%s': data '%s'"
                                            % (self._queue_name, data))
-                        continue
-                    if 'MessageId' in message:
-                        message_id = message['MessageId']
-
-                    self._process_message(m_body, message_id)
+                    if m_body is not None:
+                        self._process_message(m_body)
                     # Delete received message from queue
                     self._sqs.delete_message(
                         QueueUrl=self._queue_url,
