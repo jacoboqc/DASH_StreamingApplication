@@ -20,7 +20,7 @@ const logger = log4js.getLogger('proxy');
 var myBucket = 'dash-cloud-website';
 var queueName = 'task_queue.fifo';
 
-AWS.config.update({region: 'us-east-1'});
+AWS.config.update({region: 'eu-west-1'});
 var s3 = new AWS.S3();
 var sqs = new AWS.SQS();
 
