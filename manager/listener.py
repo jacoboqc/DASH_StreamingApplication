@@ -166,15 +166,15 @@ class Listener(Thread):
         return
 
     def assign_job(self, video_s3_location, dns_name, instance_id):
-        response = self._ec2_client.describe_instance_status(InstanceIds=instance_id)
+        response = self._ec2_client.describe_instance_status(InstanceIds=[instance_id])
         instance_status = response['InstanceStatuses'][0]['InstanceStatus']['Details'][0]['Status']
         system_status = response['InstanceStatuses'][0]['SystemStatus']['Details'][0]['Status']
         while instance_status != 'passed' and system_status != 'passed':
             time.sleep(10)
-            response = self._ec2_client.describe_instance_status(InstanceIds=instance_id)
+            response = self._ec2_client.describe_instance_status(InstanceIds=[instance_id])
             instance_status = response['InstanceStatuses'][0]['InstanceStatus']['Details'][0]['Status']
             system_status = response['InstanceStatuses'][0]['SystemStatus']['Details'][0]['Status']
-            
+
         sqs_logger.info('Assigning job to instance with id: ' + str(instance_id))
         post_job_endpoint = '/accept_job'
 
