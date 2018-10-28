@@ -172,11 +172,11 @@ class Listener(Thread):
             if instance.state.get('Code') == 80:
                 instance.start(DryRun=False)
                 while instance.state.get('Code') != 16:
-                    instance.load()
                     time.sleep(5)
+                    instance.load()
                 return instance.public_dns_name
 
-        instance = self._ec2.create_instances(
+        instances = self._ec2.create_instances(
             LaunchTemplate={
                 'LaunchTemplateName': self._launch_template_name,
                 'Version': '$Default'
@@ -184,7 +184,7 @@ class Listener(Thread):
             MaxCount=1,
             MinCount=1
         )
-        while instance[0].state.get('Code') != 16:
-            instance[0].load()
+        while instances[0].state.get('Code') != 16:
+            instances[0].load()
             time.sleep(5)
-        return instance[0].public_dns_name
+        return instances[0].public_dns_name
