@@ -67,7 +67,7 @@ app.get('/time_remaining', function (req, res) {
     });
 });
 
-app.listen(9080, "0.0.0.0", function () {
+app.listen(8080, "0.0.0.0", function () {
     logger.info('[INFO]: Server listening on port http://0.0.0.0:8080/ !');
 });
 
