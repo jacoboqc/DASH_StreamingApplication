@@ -37,7 +37,7 @@ class Balancer(Thread):
                 response = cwatch.get_metric_statistics(
                     Namespace='AWS/EC2',
                     MetricName='CPUUtilization',
-                    StartTime=(datetime.datetime.now() - datetime.timedelta(minutes=5)).isoformat(),
+                    StartTime=(datetime.datetime.now() - datetime.timedelta(seconds=500)).isoformat(),
                     EndTime=datetime.datetime.now().isoformat(),
                     Statistics=['Average'],
                     Period=1,

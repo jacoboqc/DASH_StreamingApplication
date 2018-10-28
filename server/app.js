@@ -108,7 +108,7 @@ app.get('/videos', function (req, res) {
                     // compare element 2 of the routes, if they are the same do not add it to array.
                     if (files[files.length - 1] != undefined){
                         if (files[files.length - 1] != key)
-                            files.push(content.Key);
+                            files.push(key);
                     }else{
                         files.push(key);
                     }
