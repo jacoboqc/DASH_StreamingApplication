@@ -57,7 +57,7 @@ class Balancer(Thread):
 
                             logger.info('CPU metric for instance %s: %s %s' % (instance.id, cpu_load, load_unit))
                             launch_time = instance.launch_time
-                            now = datetime.datetime.now()
+                            now = datetime.datetime.utcnow()
                             difference = (now - launch_time).total_seconds()
                             if cpu_load <= 5 and instances_running > 1 and difference > 10*3600:
                                 ec2_client.stop_instances(InstanceIds=[instance.id], DryRun=False)
