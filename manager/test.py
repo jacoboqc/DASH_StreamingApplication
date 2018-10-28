@@ -2,13 +2,14 @@
 import boto3
 import sys
 import time
+import datetime
 
-response = {'InstanceStatuses': [{'AvailabilityZone': 'eu-west-1c', 'InstanceId': 'i-0351d1c087d6b1c05', 'InstanceState': {'Code': 16, 'Name': 'running'}, 'InstanceStatus': {'Details': [{'Name': 'reachability', 'Status': 'passed'}], 'Status': 'ok'}, 'SystemStatus': {'Details': [{'Name': 'reachability', 'Status': 'passed'}], 'Status': 'ok'}}], 'ResponseMetadata': {'RequestId': '91785132-fb7f-4a10-8582-5d9620aadeda', 'HTTPStatusCode': 200, 'HTTPHeaders': {'content-type': 'text/xml;charset=UTF-8', 'content-length': '1139', 'date': 'Sun, 28 Oct 2018 17:38:07 GMT', 'server': 'AmazonEC2'}, 'RetryAttempts': 0}}
+now = datetime.datetime.now()
+time.sleep(20)
+now2 = datetime.datetime.now()
+c = (now2 - now2).total_seconds()
 
-instance_status = response['InstanceStatuses'][0]['InstanceStatus']['Details'][0]['Status']
-system_status = response['InstanceStatuses'][0]['SystemStatus']['Details'][0]['Status']
-print(instance_status)
-print(system_status)
+print(c > (10*3600))
 #
 # sqs = boto3.client('sqs')
 # region_name = 'eu-west-1'
