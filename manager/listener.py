@@ -141,8 +141,8 @@ class Listener(Thread):
                             }
                         ]
                     )
-                    cpu_load = response['Datapoints'][0]['Timestamp']
-                    if cpu_load <= 50:
+                    cpu_load = response['Datapoints'][0]['Average']
+                    if cpu_load <= 50.0:
                         sqs_logger.info('Instance running with low load. Assigning job to it. ID: ' + instance.id)
                         self.assign_job(video_s3_location, instance.public_dns_name, instance.id)
                         return
