@@ -67,13 +67,18 @@ app.get('/time_remaining', function (req, res) {
     });
 });
 
-app.listen(8080, "0.0.0.0", function () {
+app.listen(9080, "0.0.0.0", function () {
     logger.info('[INFO]: Server listening on port http://0.0.0.0:8080/ !');
 });
 
 function uploadFolderToS3(videoname){
-    command = 'aws s3 sync resources/' + videoname + ' s3://' + myBucket + '/resources';
-    exec(command);
+    command = 'aws s3 sync resources/' + ' s3://' + myBucket + '/resources';
+    copy = exec(command);
+    copy.on('close', (code) => {
+        logger.info('Copy script finished with code: ' + code);
+        removeDirectory('resources/' + videoname);
+    });
+
 }
 
 function transcoding(filename) {
@@ -88,9 +93,24 @@ function transcoding(filename) {
         }    
     });
     script.on('close', (code) => {
-        logger.info('Script finished wit code: ' + code);
+        logger.info('Script finished with code: ' + code);
         var path = url.split('/').pop().split('.')[0];
         logger.info('[INFO]: Transcoding finished. Uploading foler to S3 - PATH: ' + path);
         uploadFolderToS3(path)
     });
+}
+
+function removeDirectory(path) {
+    logger.info('Deleting directory and files inside it: ' + path);
+    if( fs.existsSync(path) ) {
+        fs.readdirSync(path).forEach(function(file,index){
+            var curPath = path + "/" + file;
+            if(fs.lstatSync(curPath).isDirectory()) { // recurse
+                deleteFolderRecursive(curPath);
+            } else { // delete file
+                fs.unlinkSync(curPath);
+            }
+        });
+        fs.rmdirSync(path);
+    }
 }

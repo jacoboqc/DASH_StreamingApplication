@@ -24,9 +24,6 @@ fsrt="${f}"
 f="${f##*/}" #remove path, just the name of the file
 f="${f,,}"
 
-if [ ! -d "resources" ]; then
-    mkdir "resources"
-    
 if [ ! -d "resources/${f}" ]; then #if directory does not exist, convert
 
     mkdir "resources/${f}"
