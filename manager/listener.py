@@ -142,7 +142,7 @@ class Listener(Thread):
                     )
                     cpu_load = response['Datapoints'][0]['Timestamp']
                     if cpu_load <= 50:
-                        self.assign_job(video_s3_location, instance.public_dns_name)
+                        self.assign_job(video_s3_location, instance.public_dns_name, instance.id)
                         return
 
                     r = requests.get('http://' + instance.public_dns_name + self._instance_api_endpoint)
@@ -153,14 +153,15 @@ class Listener(Thread):
 
                     if time_remaining < 20:
                         time.sleep(time_remaining)
-                        self.assign_job(video_s3_location, instance.public_dns_name)
+                        self.assign_job(video_s3_location, instance.public_dns_name, instance.id)
                         return
 
         dns_name_new_instance = self.launch_or_create()
-        self.assign_job(video_s3_location, dns_name_new_instance)
+        self.assign_job(video_s3_location, dns_name_new_instance, instance.id)
         return
 
-    def assign_job(self, video_s3_location, dns_name):
+    def assign_job(self, video_s3_location, dns_name, instance_id):
+        sqs_logger.info('Assigning job to instance with id: ' + str(instance_id))
         post_job_endpoint = '/accept_job'
 
         requests.post('http://' + dns_name + post_job_endpoint,
