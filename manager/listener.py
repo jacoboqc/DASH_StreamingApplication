@@ -142,6 +142,7 @@ class Listener(Thread):
                     )
                     cpu_load = response['Datapoints'][0]['Timestamp']
                     if cpu_load <= 50:
+                        sqs_logger.info('Instance running with low load. Assigning job to it. ID: ' + instance.id)
                         self.assign_job(video_s3_location, instance.public_dns_name, instance.id)
                         return
 
@@ -151,13 +152,16 @@ class Listener(Thread):
                         j = json.loads(r.json())
                         time_remaining = j['time']
 
-                    if time_remaining < 20:
+                    if time_remaining < 15:
+                        sqs_logger.info('Job almost finished in instance with id: ' + str(instance.id) + '. Waiting '
+                                        + str(time_remaining) + ' seconds to assign job to it.')
                         time.sleep(time_remaining)
                         self.assign_job(video_s3_location, instance.public_dns_name, instance.id)
                         return
 
-        dns_name_new_instance = self.launch_or_create()
-        self.assign_job(video_s3_location, dns_name_new_instance, instance.id)
+        sqs_logger.info('No instances with low load. Launching or creating new instances')
+        new_instance = self.launch_or_create()
+        self.assign_job(video_s3_location, new_instance.public_dns_name, new_instance.id)
         return
 
     def assign_job(self, video_s3_location, dns_name, instance_id):
@@ -170,12 +174,18 @@ class Listener(Thread):
 
     def launch_or_create(self):
         for instance in self._ec2.instances.all():
-            if instance.state.get('Code') == 80:
-                instance.start(DryRun=False)
-                while instance.state.get('Code') != 16:
-                    time.sleep(5)
-                    instance.load()
-                return instance.public_dns_name
+            ip = instance.public_ip_address
+            ins_id = instance.id
+            if (ip != '52.17.18.108' and ip != '52.16.139.42' and ip != '34.247.193.119' and
+                    ins_id != 'i-010dbac4c989a9ffe' and ins_id != 'i-0832e3e1c8cea1435'):
+                if instance.state.get('Code') == 80:
+                    sqs_logger.info('Starting instance with id: ' + str(instance.id))
+                    instance.start(DryRun=False)
+                    # wait until instance running
+                    while instance.state.get('Code') != 16:
+                        time.sleep(5)
+                        instance.load()
+                    return instance
 
         instances = self._ec2.create_instances(
             LaunchTemplate={
@@ -185,7 +195,9 @@ class Listener(Thread):
             MaxCount=1,
             MinCount=1
         )
+        sqs_logger.info('No instances stopped. Creating new instance... ID: ' + str(instances[0].id))
+        # wait until instance running
         while instances[0].state.get('Code') != 16:
             instances[0].load()
             time.sleep(5)
-        return instances[0].public_dns_name
+        return instances[0]
