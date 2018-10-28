@@ -4,12 +4,8 @@ import sys
 import time
 import datetime
 
-now = datetime.datetime.now()
-time.sleep(20)
-now2 = datetime.datetime.now()
-c = (now2 - now2).total_seconds()
-
-print(c > (10*3600))
+response = {'fileUrl': 'holaaa'}
+print(response['fileUrl'])
 #
 # sqs = boto3.client('sqs')
 # region_name = 'eu-west-1'

@@ -181,7 +181,7 @@ class Listener(Thread):
         post_job_endpoint = '/accept_job'
 
         requests.post('http://' + dns_name + post_job_endpoint,
-                      data={'video': video_s3_location})
+                      json={"video": video_s3_location})
 
 
     def launch_or_create(self):
