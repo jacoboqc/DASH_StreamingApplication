@@ -24,9 +24,21 @@ fsrt="${f}"
 f="${f##*/}" #remove path, just the name of the file
 f="${f,,}"
 
+if [ ! -d resources ]; then
+  mkdir -p resources;
+fi
+
+if [ ! -d tmp ]; then
+  mkdir -p tmp;
+fi
+
+if [ ! -d logs ]; then
+  mkdir -p logs;
+fi
+
 if [ ! -d "resources/${f}" ]; then #if directory does not exist, convert
 
-    mkdir "resources/${f}"
+    mkdir -p "resources/${f}"
 
     ffmpeg -y -i "${fe}" -vsync passthrough \
     -s 426x240 -c:v libx264 -b:v 350k -x264opts keyint=25:min-keyint=25:no-scenecut -profile:v main -preset medium -movflags +faststart -c:a aac -b:a 128k -ac 2 -f mp4 "tmp/${f}_350.mp4" \

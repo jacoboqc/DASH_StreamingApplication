@@ -1,11 +1,16 @@
 #from listener import Listener
 import boto3
-import sys
-import time
+import json
+import requests
 import datetime
 
-response = {'fileUrl': 'holaaa'}
-print(response['fileUrl'])
+post_job_endpoint = '/accept_job'
+video_s3_location = 'location_video'
+dns_name = 'localhost:9080'
+data = json.dumps({"video": video_s3_location})
+requests.post('http://' + dns_name + post_job_endpoint,
+              json={"video": video_s3_location})
+
 #
 # sqs = boto3.client('sqs')
 # region_name = 'eu-west-1'
