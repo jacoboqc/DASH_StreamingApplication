@@ -182,8 +182,10 @@ class Listener(Thread):
                     sqs_logger.info('Starting instance with id: ' + str(instance.id))
                     instance.start(DryRun=False)
                     # wait until instance running
+                    sqs_logger.info('Status of the instance (id: ' + str(instance.id) + ' - '
+                                    + str(instance.state.get('Name')))
                     while instance.state.get('Code') != 16:
-                        time.sleep(5)
+                        time.sleep(10)
                         instance.load()
                     return instance
 
@@ -197,7 +199,9 @@ class Listener(Thread):
         )
         sqs_logger.info('No instances stopped. Creating new instance... ID: ' + str(instances[0].id))
         # wait until instance running
+        sqs_logger.info('Status of the instance (id: ' + str(instances[0].id) + ' - '
+                        + str(instances[0].state.get('Name')))
         while instances[0].state.get('Code') != 16:
             instances[0].load()
-            time.sleep(5)
+            time.sleep(10)
         return instances[0]
