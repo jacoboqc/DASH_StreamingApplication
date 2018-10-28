@@ -103,6 +103,8 @@ class Listener(Thread):
                                            % (self._queue_name, data))
                     if m_body is not None:
                         self._process_message(m_body)
+                    if message['MessageId'] is not None:
+                        message_id = message['MessageId']
                     # Delete received message from queue
                     self._sqs.delete_message(
                         QueueUrl=self._queue_url,
