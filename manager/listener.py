@@ -123,7 +123,7 @@ class Listener(Thread):
         for instance in self._ec2.instances.all():
             if instance.state.get('Code') == 16:
                 ip = instance.public_ip_address
-                ins_id = instance.instance_id
+                ins_id = instance.id
                 if (ip != '52.17.18.108' and ip != '52.16.139.42' and ip != '34.247.193.119' and
                         ins_id != 'i-010dbac4c989a9ffe' and ins_id != 'i-0832e3e1c8cea1435'):
                     response = self._cwatch.get_metric_statistics(
