@@ -81,13 +81,15 @@ function transcoding(filename) {
     url = filename;
     command = './dash-video-mpd.sh ' + url // command to transcode files
     var script = exec(command , (error, stdout, stderr) => {
-        if (stderr){
+        logger.info(stdout);
+        if (error){
             logger.error('[ERROR]: A error occured while executing ./dash-video-mpd.sh: ' + stderr);
             return;
         }    
     });
     script.on('close', (code) => {
-        var path = url.split('/').pop();
+        logger.info('Script finished wit code: ' + code);
+        var path = url.split('/').pop().split('.')[0];
         logger.info('[INFO]: Transcoding finished. Uploading foler to S3 - PATH: ' + path);
         uploadFolderToS3(path)
     });
