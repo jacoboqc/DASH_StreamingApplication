@@ -78,6 +78,7 @@ class Listener(Thread):
         return sqs
 
     def _start_listening(self):
+
         while True:
             sqs_logger.info('Waiting for message in queue...')
             messages = self._sqs.receive_message(
@@ -91,7 +92,7 @@ class Listener(Thread):
             if 'Messages' in messages:
                 sqs_logger.info(str(len(messages['Messages'])) + " messages received")
 
-                loop = asyncio. new_event_loop()
+                loop = asyncio.new_event_loop()
                 #loop = asyncio.get_event_loop()
                 tasks = []
                 for message in messages['Messages']:
@@ -109,9 +110,9 @@ class Listener(Thread):
                         message_id = message['MessageId']
                     if m_body is not None:
                         tasks.extend(asyncio.ensure_future(self._process_message(m_body, receipt_handle, message_id)))
-
-                loop.run_until_complete(asyncio.wait(tasks))
-                loop.close()
+                if len(tasks) != 0:
+                    loop.run_until_complete(asyncio.ensure_future(tasks))
+                    loop.close()
 
             else:
                 time.sleep(self._poll_interval)
