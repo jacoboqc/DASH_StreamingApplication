@@ -85,8 +85,9 @@ class Balancer(Thread):
             ]
         )
         if len(response['Datapoints']) != 0:
-            metric = response['Datapoints'][0]['Average']
-            metric_unit = response['Datapoints'][0]['Unit']
+            length = len(response['Datapoints'])
+            metric = response['Datapoints'][length - 1]['Average']
+            metric_unit = response['Datapoints'][length - 1]['Unit']
             logger.info('CPU metric for instance %s: %s %s' % (instance.id, metric, metric_unit))
             return metric
 
@@ -108,8 +109,9 @@ class Balancer(Thread):
             ]
         )
         if len(response['Datapoints']) != 0:
-            metric = float(response['Datapoints'][0]['Average']) / 60
-            metric_unit = response['Datapoints'][0]['Unit']
+            length = len(response['Datapoints'])
+            metric = response['Datapoints'][length - 1]['Average']
+            metric_unit = response['Datapoints'][length - 1]['Unit']
             logger.info('Networkin metric for instance %s: %s %s/second' % (instance.id, metric, metric_unit))
             return metric
 
@@ -131,8 +133,9 @@ class Balancer(Thread):
             ]
         )
         if len(response['Datapoints']) != 0:
-            metric = float(response['Datapoints'][0]['Average']) / 60
-            metric_unit = response['Datapoints'][0]['Unit']
+            length = len(response['Datapoints'])
+            metric = response['Datapoints'][length - 1]['Average']
+            metric_unit = response['Datapoints'][length - 1]['Unit']
             logger.info('NetworkOut metric for instance %s: %s %s/second' % (instance.id, metric, metric_unit))
             return metric
 
@@ -154,8 +157,9 @@ class Balancer(Thread):
             ]
         )
         if len(response['Datapoints']) != 0:
-            metric = float(response['Datapoints'][0]['Average']) / 60
-            metric_unit = response['Datapoints'][0]['Unit']
+            length = len(response['Datapoints'])
+            metric = response['Datapoints'][length - 1]['Average']
+            metric_unit = response['Datapoints'][length - 1]['Unit']
             logger.info('DiskWriteBytes metric for instance %s: %s %s/second' % (instance.id, metric, metric_unit))
             return metric
 
@@ -177,8 +181,9 @@ class Balancer(Thread):
             ]
         )
         if len(response['Datapoints']) != 0:
-            metric = float(response['Datapoints'][0]['Average']) / 60
-            metric_unit = response['Datapoints'][0]['Unit']
+            length = len(response['Datapoints'])
+            metric = response['Datapoints'][length - 1]['Average']
+            metric_unit = response['Datapoints'][length - 1]['Unit']
             logger.info('DiskReadBytes metric for instance %s: %s %s/second' % (instance.id, metric, metric_unit))
             return metric
 
