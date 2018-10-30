@@ -199,7 +199,7 @@ class Listener(Thread):
         try:
             response = requests.post('http://' + dns_name + post_job_endpoint,
                                      json={"video": video_s3_location})
-            time.sleep(60)
+            time.sleep(80)
             return response.status_code == 200
         except requests.exceptions.RequestException:
             sqs_logger.error('Error trying to connect to FFMPEG instance while trying to assing job. InstanceID: '
