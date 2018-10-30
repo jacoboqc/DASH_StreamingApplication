@@ -65,7 +65,7 @@ class Balancer(Thread):
                                 ec2_client.stop_instances(InstanceIds=[instance.id], DryRun=False)
                                 logger.info('Stopping instance %s for low load' % instance.id)
                 logger.info('Running %s instances.' % str(instances_running))
-                time.sleep(5)
+                time.sleep(30)
 
     def cpu_metric(self, instance):
         response = cwatch.get_metric_statistics(
