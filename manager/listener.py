@@ -189,7 +189,7 @@ class Listener(Thread):
             ip = instance.public_ip_address
             ins_id = instance.id
             if (ip != '52.17.18.108' and ip != '52.16.139.42' and ip != '34.247.193.119' and
-                    ins_id != 'i-010dbac4c989a9ffe' and ins_id != 'i-0832e3e1c8cea1435'):
+                    ins_id != 'i-0499fe00dbf35e2ae' and ins_id != 'i-0832e3e1c8cea1435'):
                 if instance.state.get('Code') == 80:
                     sqs_logger.info('Starting instance with id: ' + str(instance.id))
                     instance.start(DryRun=False)
