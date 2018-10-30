@@ -163,12 +163,16 @@ class Listener(Thread):
                         self.assign_job(video_s3_location, instance.public_dns_name, instance.id)
                         return
 
-                    r = requests.get('http://' + instance.public_dns_name + self._instance_api_endpoint)
-                    time_remaining = 0
-                    sqs_logger.info(time_remaining)
-                    sqs_logger.info(float(time_remaining) < 15.0)
-                    if r.status_code == 200:
-                        time_remaining = r.json()
+                    time_remaining = 100
+                    try:
+                        r = requests.get('http://' + instance.public_dns_name + self._instance_api_endpoint)
+                        sqs_logger.info(time_remaining)
+                        sqs_logger.info(float(time_remaining) < 15.0)
+                        if r.status_code == 200:
+                            time_remaining = r.json()
+                    except requests.exceptions.RequestException:
+                        sqs_logger.error('Error trying to connect to FFMPEG instance while trying to get time ' +
+                                         'remaining. InstanceID: ' + instance.id)
 
                     if float(time_remaining) < 15.0:
                         sqs_logger.info('Job almost finished in instance with id: ' + str(instance.id) + '. Waiting '
