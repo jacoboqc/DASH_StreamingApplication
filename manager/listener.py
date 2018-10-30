@@ -34,7 +34,7 @@ class Listener(Thread):
         self._message_attribute_names = kwargs['message_attribute_names'] if 'message_attribute_names' in kwargs else []
         self._attribute_names = kwargs['attribute_names'] if 'attribute_names' in kwargs else []
         self._region_name = kwargs['region_name'] if 'region_name' in kwargs else None
-        self._wait_time = kwargs['wait_time'] if 'wait_time' in kwargs else 20
+        self._wait_time = kwargs['wait_time'] if 'wait_time' in kwargs else 10
         self._max_number_of_messages = kwargs['max_number_of_messages'] if 'max_number_of_messages' in kwargs else 1
 
         self._sqs = self._initialize_sqs()
@@ -165,7 +165,7 @@ class Listener(Thread):
 
                     time_remaining = 100
                     try:
-                        r = requests.get('http://' + instance.public_dns_name + self._instance_api_endpoint)
+                        r = requests.get('http://' + instance.public_dns_name + self._instance_api_endpoint, timeout=5)
                         sqs_logger.info(time_remaining)
                         sqs_logger.info(float(time_remaining) < 15.0)
                         if r.status_code == 200:
@@ -202,7 +202,7 @@ class Listener(Thread):
         try:
             response = requests.post('http://' + dns_name + post_job_endpoint,
                                      json={"video": video_s3_location})
-            time.sleep(80)
+            time.sleep(120)
             return response.status_code == 200
         except requests.exceptions.RequestException:
             sqs_logger.error('Error trying to connect to FFMPEG instance while trying to assing job. InstanceID: '
