@@ -145,14 +145,16 @@ class Listener(Thread):
                             }
                         ]
                     )
-                    i = 0
-                    date = response['Datapoints'][i]['Timestamp']
-                    cpu_load = response['Datapoints'][i]['Average']
-                    for d in response['Datapoints']:
-                        if i != 0:
-                            if date < d['Timestamp']:
-                                cpu_load = d['Average']
-                        i += 1
+                    cpu_load = 0
+                    if len(response['Datapoints']) != 0:
+                        i = 0
+                        date = response['Datapoints'][i]['Timestamp']
+                        cpu_load = response['Datapoints'][i]['Average']
+                        for d in response['Datapoints']:
+                            if i != 0:
+                                if date < d['Timestamp']:
+                                    cpu_load = d['Average']
+                            i += 1
 
                     sqs_logger.info(cpu_load)
                     sqs_logger.info(float(cpu_load) < 50.0)

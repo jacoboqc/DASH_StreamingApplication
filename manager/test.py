@@ -9,7 +9,7 @@ import concurrent.futures
 
 sqs = boto3.client('sqs')
 region_name = 'eu-west-1'
-queue_name = 'task_queue'
+queue_name = 'test_queue'
 listener = Listener(queue_name, region_name=region_name, max_number_of_messages=5)
 listener.start()
 
