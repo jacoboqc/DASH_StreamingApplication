@@ -32,7 +32,7 @@ logger.addHandler(sh)
 class Balancer(Thread):
 
     def run(self):
-        with open('monitor.csv', 'ab') as csv_file:
+        with open('monitor.csv', 'a', newline='') as csv_file:
             writer = csv.writer(csv_file, delimiter=",")
             metrics = ['InstanceID', 'CPUUtilization', 'NetworkIn', 'NetworkOut', 'DiskReadBytes', 'DiskWriteBytes']
             writer.writerow(metrics)
