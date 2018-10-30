@@ -96,21 +96,23 @@ class Listener(Thread):
                     data = message['Body']
                     message_id = None
                     m_body = None
+                    success = False
                     try:
                         m_body = json.loads(data)
                     except:
                         sqs_logger.warning("Unable to parse message from SQS queue '%s': data '%s'"
                                            % (self._queue_name, data))
                     if m_body is not None:
-                        self._process_message(m_body)
+                        success = self._process_message(m_body)
                     if message['MessageId'] is not None:
                         message_id = message['MessageId']
                     # Delete received message from queue
-                    self._sqs.delete_message(
-                        QueueUrl=self._queue_url,
-                        ReceiptHandle=receipt_handle
-                    )
-                    sqs_logger.info("Message with ID: %s deleted." % message_id)
+                    if success:
+                        self._sqs.delete_message(
+                            QueueUrl=self._queue_url,
+                            ReceiptHandle=receipt_handle
+                        )
+                        sqs_logger.info("Message with ID: %s deleted." % message_id)
             else:
                 time.sleep(self._poll_interval)
 
@@ -160,13 +162,13 @@ class Listener(Thread):
                         sqs_logger.info('Job almost finished in instance with id: ' + str(instance.id) + '. Waiting '
                                         + str(time_remaining) + ' seconds to assign job to it.')
                         time.sleep(time_remaining)
-                        self.assign_job(video_s3_location, instance.public_dns_name, instance.id)
-                        return
+                        success = self.assign_job(video_s3_location, instance.public_dns_name, instance.id)
+                        return success
 
         sqs_logger.info('No instances with low load. Launching or creating new instances')
         new_instance = self.launch_or_create()
-        self.assign_job(video_s3_location, new_instance.public_dns_name, new_instance.id)
-        return
+        success = self.assign_job(video_s3_location, new_instance.public_dns_name, new_instance.id)
+        return success
 
     def assign_job(self, video_s3_location, dns_name, instance_id):
         response = self._ec2_client.describe_instance_status(InstanceIds=[instance_id])
@@ -181,9 +183,14 @@ class Listener(Thread):
         sqs_logger.info('Assigning job to instance with id: ' + str(instance_id))
         post_job_endpoint = '/accept_job'
 
-        requests.post('http://' + dns_name + post_job_endpoint,
-                      json={"video": video_s3_location})
-
+        try:
+            response = requests.post('http://' + dns_name + post_job_endpoint,
+                                     json={"video": video_s3_location})
+            return response.status_code == 200
+        except requests.exceptions.RequestException:
+            sqs_logger.error('Error trying to connect to FFMPEG instance while trying to assing job. InstanceID: '
+                             + str(instance_id))
+            return False
 
     def launch_or_create(self):
         for instance in self._ec2.instances.all():
@@ -206,7 +213,7 @@ class Listener(Thread):
             LaunchTemplate={
                 'LaunchTemplateName': self._launch_template_name,
                 'Version': '$Default'
-                },
+            },
             MaxCount=1,
             MinCount=1
         )
