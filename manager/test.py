@@ -6,12 +6,12 @@ import datetime
 import asyncio
 import concurrent.futures
 
+instance_api_endpoint = '/time_remaining'
 
-sqs = boto3.client('sqs')
-region_name = 'eu-west-1'
-queue_name = 'test_queue'
-listener = Listener(queue_name, region_name=region_name, max_number_of_messages=5)
-listener.start()
+r = requests.get('http://' + '34.246.202.12' + instance_api_endpoint)
+if r.status_code == 200:
+    time_remaining = r.json()
+    print(time_remaining)
 
 # queue_url = sqs.get_queue_url(QueueName=queue_name)
 # queue_url = queue_url['QueueUrl']

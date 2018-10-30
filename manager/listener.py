@@ -168,8 +168,7 @@ class Listener(Thread):
                     sqs_logger.info(time_remaining)
                     sqs_logger.info(float(time_remaining) < 15.0)
                     if r.status_code == 200:
-                        j = json.loads(r.json())
-                        time_remaining = j['time']
+                        time_remaining = r.json()
 
                     if float(time_remaining) < 15.0:
                         sqs_logger.info('Job almost finished in instance with id: ' + str(instance.id) + '. Waiting '
