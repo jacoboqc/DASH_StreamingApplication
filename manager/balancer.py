@@ -43,7 +43,6 @@ class Balancer(Thread):
                 logger.info('Running %s instances.' % str(size))
                 instances_running = 0
                 for instance in ec2.instances.all():
-
                     if instance.state.get('Code') == 16:
                         ip = instance.public_ip_address
                         if (ip != '52.17.18.108' and ip != '52.16.139.42' and ip != '34.247.193.119'
@@ -63,8 +62,8 @@ class Balancer(Thread):
                             launch_time = instance.launch_time
                             now = datetime.datetime.now(timezone.utc)
                             difference = (now - launch_time).total_seconds()
-                            logger.info('Total Time instance running (id: ' + str(instance.id) + ' - ' + str(difference))
-                            if cpu_load <= 5 and instances_running > 1 and difference > 10*3600:
+                            logger.info('Total Time instance running (id: ' + str(instance.id) + ') - ' + str(difference))
+                            if float(cpu_load) < 5.0 and int(instances_running) > 1 or int(difference) > 10*3600:
                                 ec2_client.stop_instances(InstanceIds=[instance.id], DryRun=False)
                                 logger.info('Stopping instance %s for low load' % instance.id)
 
@@ -74,7 +73,7 @@ class Balancer(Thread):
         response = cwatch.get_metric_statistics(
             Namespace='AWS/EC2',
             MetricName='CPUUtilization',
-            StartTime=(datetime.datetime.now() - datetime.timedelta(seconds=60)).isoformat(),
+            StartTime=(datetime.datetime.now() - datetime.timedelta(seconds=120)).isoformat(),
             EndTime=datetime.datetime.now().isoformat(),
             Statistics=['Average'],
             Period=1,
@@ -96,17 +95,15 @@ class Balancer(Thread):
                         metric = d['Average']
                         metric_unit = d['Unit']
                 i += 1
-
             logger.info('CPU metric for instance %s: %s %s' % (instance.id, metric, metric_unit))
             return metric
-
         return 0
 
     def network_in(self, instance):
         response = cwatch.get_metric_statistics(
             Namespace='AWS/EC2',
             MetricName='NetworkIn',
-            StartTime=(datetime.datetime.now() - datetime.timedelta(seconds=500)).isoformat(),
+            StartTime=(datetime.datetime.now() - datetime.timedelta(seconds=120)).isoformat(),
             EndTime=datetime.datetime.now().isoformat(),
             Statistics=['Average'],
             Period=1,
@@ -130,14 +127,13 @@ class Balancer(Thread):
                 i += 1
             logger.info('Networkin metric for instance %s: %s %s/second' % (instance.id, metric, metric_unit))
             return metric
-
         return 0
 
     def network_out(self, instance):
         response = cwatch.get_metric_statistics(
             Namespace='AWS/EC2',
             MetricName='NetworkOut',
-            StartTime=(datetime.datetime.now() - datetime.timedelta(seconds=500)).isoformat(),
+            StartTime=(datetime.datetime.now() - datetime.timedelta(seconds=120)).isoformat(),
             EndTime=datetime.datetime.now().isoformat(),
             Statistics=['Average'],
             Period=1,
@@ -161,14 +157,13 @@ class Balancer(Thread):
                 i += 1
             logger.info('NetworkOut metric for instance %s: %s %s/second' % (instance.id, metric, metric_unit))
             return metric
-
         return 0
 
     def write_bytes(self, instance):
         response = cwatch.get_metric_statistics(
             Namespace='AWS/EC2',
             MetricName='DiskWriteBytes',
-            StartTime=(datetime.datetime.now() - datetime.timedelta(seconds=500)).isoformat(),
+            StartTime=(datetime.datetime.now() - datetime.timedelta(seconds=120)).isoformat(),
             EndTime=datetime.datetime.now().isoformat(),
             Statistics=['Average'],
             Period=1,
@@ -192,14 +187,13 @@ class Balancer(Thread):
                 i += 1
             logger.info('DiskWriteBytes metric for instance %s: %s %s/second' % (instance.id, metric, metric_unit))
             return metric
-
         return 0
 
     def read_bytes(self, instance):
         response = cwatch.get_metric_statistics(
             Namespace='AWS/EC2',
             MetricName='DiskReadBytes',
-            StartTime=(datetime.datetime.now() - datetime.timedelta(seconds=500)).isoformat(),
+            StartTime=(datetime.datetime.now() - datetime.timedelta(seconds=120)).isoformat(),
             EndTime=datetime.datetime.now().isoformat(),
             Statistics=['Average'],
             Period=1,
@@ -223,5 +217,4 @@ class Balancer(Thread):
                 i += 1
             logger.info('DiskReadBytes metric for instance %s: %s %s/second' % (instance.id, metric, metric_unit))
             return metric
-
         return 0
