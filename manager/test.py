@@ -4,14 +4,14 @@ import json
 import requests
 import datetime
 
-post_job_endpoint = '/accept_job'
-video_s3_location = 'location_video'
-dns_name = 'localhost:9080'
-data = json.dumps({"video": video_s3_location})
-requests.post('http://' + dns_name + post_job_endpoint,
-              json={"video": video_s3_location})
+cpu_load = '0.25645'
+instances_running = 3
+difference = 800
+print(float(cpu_load) < 5.0)
+print(int(instances_running) > 1)
+print(int(difference) > 10 * 60)
 
-#
+
 # sqs = boto3.client('sqs')
 # region_name = 'eu-west-1'
 # queue_name = 'task_queue'
