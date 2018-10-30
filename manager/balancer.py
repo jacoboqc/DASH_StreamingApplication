@@ -73,7 +73,7 @@ class Balancer(Thread):
         response = cwatch.get_metric_statistics(
             Namespace='AWS/EC2',
             MetricName='CPUUtilization',
-            StartTime=(datetime.datetime.now() - datetime.timedelta(seconds=500)).isoformat(),
+            StartTime=(datetime.datetime.now() - datetime.timedelta(seconds=60)).isoformat(),
             EndTime=datetime.datetime.now().isoformat(),
             Statistics=['Average'],
             Period=1,
@@ -85,9 +85,17 @@ class Balancer(Thread):
             ]
         )
         if len(response['Datapoints']) != 0:
-            length = len(response['Datapoints'])
-            metric = response['Datapoints'][length - 1]['Average']
-            metric_unit = response['Datapoints'][length - 1]['Unit']
+            i = 0
+            date = response['Timestamp']
+            metric = response['Datapoints'][i]['Average']
+            metric_unit = response['Datapoints'][i]['Unit']
+            for d in response['Datapoints']:
+                if i != 0:
+                    if date < d['Timestamt']:
+                        metric = d['Datapoints'][i]['Average']
+                        metric_unit = d['Datapoints'][i]['Unit']
+                i += 1
+
             logger.info('CPU metric for instance %s: %s %s' % (instance.id, metric, metric_unit))
             return metric
 
@@ -109,9 +117,16 @@ class Balancer(Thread):
             ]
         )
         if len(response['Datapoints']) != 0:
-            length = len(response['Datapoints'])
-            metric = response['Datapoints'][length - 1]['Average']
-            metric_unit = response['Datapoints'][length - 1]['Unit']
+            i = 0
+            date = response['Timestamp']
+            metric = response['Datapoints'][i]['Average']
+            metric_unit = response['Datapoints'][i]['Unit']
+            for d in response['Datapoints']:
+                if i != 0:
+                    if date < d['Timestamt']:
+                        metric = d['Datapoints'][i]['Average']
+                        metric_unit = d['Datapoints'][i]['Unit']
+                i += 1
             logger.info('Networkin metric for instance %s: %s %s/second' % (instance.id, metric, metric_unit))
             return metric
 
@@ -133,9 +148,16 @@ class Balancer(Thread):
             ]
         )
         if len(response['Datapoints']) != 0:
-            length = len(response['Datapoints'])
-            metric = response['Datapoints'][length - 1]['Average']
-            metric_unit = response['Datapoints'][length - 1]['Unit']
+            i = 0
+            date = response['Timestamp']
+            metric = response['Datapoints'][i]['Average']
+            metric_unit = response['Datapoints'][i]['Unit']
+            for d in response['Datapoints']:
+                if i != 0:
+                    if date < d['Timestamt']:
+                        metric = d['Datapoints'][i]['Average']
+                        metric_unit = d['Datapoints'][i]['Unit']
+                i += 1
             logger.info('NetworkOut metric for instance %s: %s %s/second' % (instance.id, metric, metric_unit))
             return metric
 
@@ -157,9 +179,16 @@ class Balancer(Thread):
             ]
         )
         if len(response['Datapoints']) != 0:
-            length = len(response['Datapoints'])
-            metric = response['Datapoints'][length - 1]['Average']
-            metric_unit = response['Datapoints'][length - 1]['Unit']
+            i = 0
+            date = response['Timestamp']
+            metric = response['Datapoints'][i]['Average']
+            metric_unit = response['Datapoints'][i]['Unit']
+            for d in response['Datapoints']:
+                if i != 0:
+                    if date < d['Timestamt']:
+                        metric = d['Datapoints'][i]['Average']
+                        metric_unit = d['Datapoints'][i]['Unit']
+                i += 1
             logger.info('DiskWriteBytes metric for instance %s: %s %s/second' % (instance.id, metric, metric_unit))
             return metric
 
@@ -181,9 +210,16 @@ class Balancer(Thread):
             ]
         )
         if len(response['Datapoints']) != 0:
-            length = len(response['Datapoints'])
-            metric = response['Datapoints'][length - 1]['Average']
-            metric_unit = response['Datapoints'][length - 1]['Unit']
+            i = 0
+            date = response['Timestamp']
+            metric = response['Datapoints'][i]['Average']
+            metric_unit = response['Datapoints'][i]['Unit']
+            for d in response['Datapoints']:
+                if i != 0:
+                    if date < d['Timestamt']:
+                        metric = d['Datapoints'][i]['Average']
+                        metric_unit = d['Datapoints'][i]['Unit']
+                i += 1
             logger.info('DiskReadBytes metric for instance %s: %s %s/second' % (instance.id, metric, metric_unit))
             return metric
 
