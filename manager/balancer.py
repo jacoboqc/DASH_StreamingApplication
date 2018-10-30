@@ -71,7 +71,7 @@ class Balancer(Thread):
         response = cwatch.get_metric_statistics(
             Namespace='AWS/EC2',
             MetricName='CPUUtilization',
-            StartTime=(datetime.datetime.now() - datetime.timedelta(seconds=120)).isoformat(),
+            StartTime=(datetime.datetime.now() - datetime.timedelta(seconds=300)).isoformat(),
             EndTime=datetime.datetime.now().isoformat(),
             Statistics=['Average'],
             Period=1,
@@ -101,7 +101,7 @@ class Balancer(Thread):
         response = cwatch.get_metric_statistics(
             Namespace='AWS/EC2',
             MetricName='NetworkIn',
-            StartTime=(datetime.datetime.now() - datetime.timedelta(seconds=120)).isoformat(),
+            StartTime=(datetime.datetime.now() - datetime.timedelta(seconds=300)).isoformat(),
             EndTime=datetime.datetime.now().isoformat(),
             Statistics=['Average'],
             Period=1,
@@ -131,7 +131,7 @@ class Balancer(Thread):
         response = cwatch.get_metric_statistics(
             Namespace='AWS/EC2',
             MetricName='NetworkOut',
-            StartTime=(datetime.datetime.now() - datetime.timedelta(seconds=120)).isoformat(),
+            StartTime=(datetime.datetime.now() - datetime.timedelta(seconds=300)).isoformat(),
             EndTime=datetime.datetime.now().isoformat(),
             Statistics=['Average'],
             Period=1,
@@ -161,7 +161,7 @@ class Balancer(Thread):
         response = cwatch.get_metric_statistics(
             Namespace='AWS/EC2',
             MetricName='DiskWriteBytes',
-            StartTime=(datetime.datetime.now() - datetime.timedelta(seconds=120)).isoformat(),
+            StartTime=(datetime.datetime.now() - datetime.timedelta(seconds=300)).isoformat(),
             EndTime=datetime.datetime.now().isoformat(),
             Statistics=['Average'],
             Period=1,
@@ -191,7 +191,7 @@ class Balancer(Thread):
         response = cwatch.get_metric_statistics(
             Namespace='AWS/EC2',
             MetricName='DiskReadBytes',
-            StartTime=(datetime.datetime.now() - datetime.timedelta(seconds=120)).isoformat(),
+            StartTime=(datetime.datetime.now() - datetime.timedelta(seconds=300)).isoformat(),
             EndTime=datetime.datetime.now().isoformat(),
             Statistics=['Average'],
             Period=1,

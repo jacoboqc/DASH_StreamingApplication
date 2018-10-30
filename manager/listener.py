@@ -134,7 +134,7 @@ class Listener(Thread):
                     response = self._cwatch.get_metric_statistics(
                         Namespace='AWS/EC2',
                         MetricName='CPUUtilization',
-                        StartTime=(datetime.datetime.now() - datetime.timedelta(minutes=5)).isoformat(),
+                        StartTime=(datetime.datetime.now() - datetime.timedelta(seconds=600)).isoformat(),
                         EndTime=datetime.datetime.now().isoformat(),
                         Statistics=['Average'],
                         Period=1,
@@ -145,7 +145,7 @@ class Listener(Thread):
                             }
                         ]
                     )
-                    cpu_load = 0
+                    cpu_load = 100
                     if len(response['Datapoints']) != 0:
                         i = 0
                         date = response['Datapoints'][i]['Timestamp']
@@ -201,7 +201,7 @@ class Listener(Thread):
 
         try:
             response = requests.post('http://' + dns_name + post_job_endpoint,
-                                     json={"video": video_s3_location})
+                                     json={"video": video_s3_location}, timeout=10)
             time.sleep(120)
             return response.status_code == 200
         except requests.exceptions.RequestException:
