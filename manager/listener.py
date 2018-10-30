@@ -128,7 +128,7 @@ class Listener(Thread):
                 ip = instance.public_ip_address
                 ins_id = instance.id
                 if (ip != '52.17.18.108' and ip != '52.16.139.42' and ip != '34.247.193.119' and
-                        ins_id != 'i-010dbac4c989a9ffe' and ins_id != 'i-0832e3e1c8cea1435'):
+                        ins_id != 'i-0499fe00dbf35e2ae' and ins_id != 'i-0832e3e1c8cea1435'):
                     response = self._cwatch.get_metric_statistics(
                         Namespace='AWS/EC2',
                         MetricName='CPUUtilization',
@@ -194,7 +194,7 @@ class Listener(Thread):
                     sqs_logger.info('Starting instance with id: ' + str(instance.id))
                     instance.start(DryRun=False)
                     # wait until instance running
-                    sqs_logger.info('Status of the instance (id: ' + str(instance.id) + ' - '
+                    sqs_logger.info('Status of the instance (id: ' + str(instance.id) + ') - '
                                     + str(instance.state.get('Name')))
                     while instance.state.get('Code') != 16:
                         time.sleep(10)

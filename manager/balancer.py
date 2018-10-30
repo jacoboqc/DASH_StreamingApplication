@@ -47,7 +47,7 @@ class Balancer(Thread):
                     if instance.state.get('Code') == 16:
                         ip = instance.public_ip_address
                         if (ip != '52.17.18.108' and ip != '52.16.139.42' and ip != '34.247.193.119'
-                                and instance.id != 'i-010dbac4c989a9ffe' and instance.id != 'i-0832e3e1c8cea1435'):
+                                and instance.id != 'i-0499fe00dbf35e2ae' and instance.id != 'i-0832e3e1c8cea1435'):
                             instances_running += 1
 
                             cpu_load = self.cpu_metric(instance)
