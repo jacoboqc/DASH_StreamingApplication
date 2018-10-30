@@ -145,14 +145,13 @@ class Listener(Thread):
                             }
                         ]
                     )
-                    length = len(response['Datapoints'])
                     i = 0
-                    date = response['Timestamp']
+                    date = response['Datapoints'][i]['Timestamp']
                     cpu_load = response['Datapoints'][i]['Average']
                     for d in response['Datapoints']:
                         if i != 0:
-                            if date < d['Timestamt']:
-                                cpu_load = d['Datapoints'][i]['Average']
+                            if date < d['Timestamp']:
+                                cpu_load = d['Average']
                         i += 1
                     if cpu_load <= 50.0:
                         sqs_logger.info('Instance running with low load. Assigning job to it. ID: ' + instance.id)
