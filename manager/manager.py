@@ -29,7 +29,7 @@ logger.addHandler(sh)
 
 def launch_proxy():
     global proxy_id
-    #if there was a proxy terminate its instance
+    # if there was a proxy terminate its instance
     if proxy_id != '':
         ec2_client.terminate_instances(InstanceIds=[proxy_id], DryRun=False)
         logger.info('Terminating former Proxy instance with id: ' + str(proxy_id))
