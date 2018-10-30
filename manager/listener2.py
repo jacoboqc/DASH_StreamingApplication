@@ -7,6 +7,7 @@ import time
 import logging
 import requests
 import datetime
+import asyncio
 
 sqs_logger = logging.getLogger(__name__)
 sqs_logger.setLevel(logging.INFO)
@@ -90,29 +91,28 @@ class Listener(Thread):
             if 'Messages' in messages:
                 sqs_logger.info(str(len(messages['Messages'])) + " messages received")
 
+                loop = asyncio. new_event_loop()
+                #loop = asyncio.get_event_loop()
+                tasks = []
                 for message in messages['Messages']:
                     sqs_logger.info('Getting message...')
                     receipt_handle = message['ReceiptHandle']
                     data = message['Body']
                     message_id = None
                     m_body = None
-                    success = False
                     try:
                         m_body = json.loads(data)
                     except:
                         sqs_logger.warning("Unable to parse message from SQS queue '%s': data '%s'"
                                            % (self._queue_name, data))
-                    if m_body is not None:
-                        success = self._process_message(m_body)
                     if message['MessageId'] is not None:
                         message_id = message['MessageId']
-                    # Delete received message from queue
-                    if success:
-                        self._sqs.delete_message(
-                            QueueUrl=self._queue_url,
-                            ReceiptHandle=receipt_handle
-                        )
-                        sqs_logger.info("Message with ID: %s deleted." % message_id)
+                    if m_body is not None:
+                        tasks.extend(asyncio.ensure_future(self._process_message(m_body, receipt_handle, message_id)))
+
+                loop.run_until_complete(asyncio.wait(tasks))
+                loop.close()
+
             else:
                 time.sleep(self._poll_interval)
 
@@ -121,7 +121,7 @@ class Listener(Thread):
 
         self._start_listening()
 
-    def _process_message(self, body):
+    async def _process_message(self, body, receipt_handle, message_id):
         sqs_logger.info("Processing message %s" % body)
         video_s3_location = body['fileUrl']
 
@@ -154,17 +154,14 @@ class Listener(Thread):
                                 cpu_load = d['Average']
                         i += 1
 
-                    sqs_logger.info(cpu_load)
-                    sqs_logger.info(float(cpu_load) < 50.0)
+                    sqs_logger.info('LOW LOAD???? ' + str(float(cpu_load) < 50.0))
                     if float(cpu_load) < 50.0:
                         sqs_logger.info('Instance running with low load. Assigning job to it. ID: ' + instance.id)
-                        self.assign_job(video_s3_location, instance.public_dns_name, instance.id)
+                        await self.assign_job(video_s3_location, instance.public_dns_name, instance.id)
                         return
 
                     r = requests.get('http://' + instance.public_dns_name + self._instance_api_endpoint)
                     time_remaining = 0
-                    sqs_logger.info(time_remaining)
-                    sqs_logger.info(float(time_remaining) < 15.0)
                     if r.status_code == 200:
                         j = json.loads(r.json())
                         time_remaining = j['time']
@@ -174,14 +171,26 @@ class Listener(Thread):
                                         + str(time_remaining) + ' seconds to assign job to it.')
                         time.sleep(time_remaining)
                         success = self.assign_job(video_s3_location, instance.public_dns_name, instance.id)
-                        return success
+                        self.delete_message(receipt_handle, success, message_id)
+                        return
 
         sqs_logger.info('No instances with low load. Launching or creating new instances')
         new_instance = self.launch_or_create()
         success = self.assign_job(video_s3_location, new_instance.public_dns_name, new_instance.id)
+        self.delete_message(receipt_handle, success, message_id)
+        return
+
+    def delete_message(self, receipt_handle, success, message_id):
+        # Delete received message from queue
+        if success:
+            self._sqs.delete_message(
+                QueueUrl=self._queue_url,
+                ReceiptHandle=receipt_handle
+            )
+            sqs_logger.info("Message with ID: %s deleted." % message_id)
         return success
 
-    def assign_job(self, video_s3_location, dns_name, instance_id):
+    async def assign_job(self, video_s3_location, dns_name, instance_id):
         response = self._ec2_client.describe_instance_status(InstanceIds=[instance_id])
         instance_status = response['InstanceStatuses'][0]['InstanceStatus']['Details'][0]['Status']
         system_status = response['InstanceStatuses'][0]['SystemStatus']['Details'][0]['Status']

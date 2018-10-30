@@ -1,23 +1,18 @@
-#from listener import Listener
+from listener2 import Listener
 import boto3
 import json
 import requests
 import datetime
-
-cpu_load = '0.25645'
-instances_running = 3
-difference = 800
-print(float(cpu_load) < 5.0)
-print(int(instances_running) > 1)
-print(int(difference) > 10 * 60)
+import asyncio
+import concurrent.futures
 
 
-# sqs = boto3.client('sqs')
-# region_name = 'eu-west-1'
-# queue_name = 'task_queue'
-# listener = Listener(queue_name, region_name=region_name, max_number_of_messages=5)
-# listener.start()
-#
+sqs = boto3.client('sqs')
+region_name = 'eu-west-1'
+queue_name = 'task_queue'
+listener = Listener(queue_name, region_name=region_name, max_number_of_messages=5)
+listener.start()
+
 # queue_url = sqs.get_queue_url(QueueName=queue_name)
 # queue_url = queue_url['QueueUrl']
 # for i in range(0, 5):
