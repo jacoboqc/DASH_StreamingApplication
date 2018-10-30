@@ -126,6 +126,8 @@ app.post('/test', function (req, res) {
         video_path = 'http://s3-eu-west-1.amazonaws.com/' + myBucket + '/uploads/' + 'video_test' + i + '.mp4';
         sendQueueMessage(video_path);
     }
+    res.status(200);
+    res.send('SUCCESS');
 });
 
 app.listen(8000, "0.0.0.0", function () {

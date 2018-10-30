@@ -153,7 +153,7 @@ class Listener(Thread):
                             if date < d['Timestamp']:
                                 cpu_load = d['Average']
                         i += 1
-                    if cpu_load <= 50.0:
+                    if float(cpu_load) <= 50.0:
                         sqs_logger.info('Instance running with low load. Assigning job to it. ID: ' + instance.id)
                         self.assign_job(video_s3_location, instance.public_dns_name, instance.id)
                         return
@@ -164,7 +164,7 @@ class Listener(Thread):
                         j = json.loads(r.json())
                         time_remaining = j['time']
 
-                    if time_remaining < 15:
+                    if float(time_remaining) < 15.0:
                         sqs_logger.info('Job almost finished in instance with id: ' + str(instance.id) + '. Waiting '
                                         + str(time_remaining) + ' seconds to assign job to it.')
                         time.sleep(time_remaining)
