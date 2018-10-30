@@ -134,7 +134,7 @@ class Listener(Thread):
                     response = self._cwatch.get_metric_statistics(
                         Namespace='AWS/EC2',
                         MetricName='CPUUtilization',
-                        StartTime=(datetime.datetime.now() - datetime.timedelta(seconds=600)).isoformat(),
+                        StartTime=(datetime.datetime.now() - datetime.timedelta(seconds=800)).isoformat(),
                         EndTime=datetime.datetime.now().isoformat(),
                         Statistics=['Average'],
                         Period=1,
