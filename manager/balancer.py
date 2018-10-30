@@ -63,6 +63,7 @@ class Balancer(Thread):
                             launch_time = instance.launch_time
                             now = datetime.datetime.now(timezone.utc)
                             difference = (now - launch_time).total_seconds()
+                            logger.info('Total Time instance running (id: ' + str(instance.id) + ' - ' + str(difference))
                             if cpu_load <= 5 and instances_running > 1 and difference > 10*3600:
                                 ec2_client.stop_instances(InstanceIds=[instance.id], DryRun=False)
                                 logger.info('Stopping instance %s for low load' % instance.id)
