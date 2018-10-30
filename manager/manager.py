@@ -28,6 +28,11 @@ logger.addHandler(sh)
 
 
 def launch_proxy():
+    global proxy_id
+    #if there was a proxy terminate its instance
+    if proxy_id != '':
+        ec2_client.terminate_instances(InstanceIds=[proxy_id], DryRun=False)
+        logger.info('Terminating former Proxy instance with id: ' + str(proxy_id))
     # launch proxy
     response = ec2.create_instances(
         LaunchTemplate={
@@ -39,6 +44,7 @@ def launch_proxy():
     )
     instance = response[0]
     instance_id = instance.id
+    proxy_id = instance_id
     global proxy_status
     proxy_status = instance.state.get('Code')
     try:
@@ -95,6 +101,7 @@ main_manager = (sys.argv[1] == 'True')
 region_name = 'eu-west-1'
 proxy_up = not main_manager
 proxy_status = ''
+proxy_id = ''
 ip_manager = sys.argv[2]
 ip_proxy = '52.17.18.108'
 
