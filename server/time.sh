@@ -11,5 +11,5 @@ for filename in logs/*.log; do
     if [ $final_time \> $max_time ]; then
         max_time=$final_time
     fi
-    echo $max_time
 done
+echo $max_time
